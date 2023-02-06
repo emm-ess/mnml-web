@@ -1,36 +1,13 @@
 import {debounce} from 'throttle-debounce'
 
+import type {Mnml} from './mnml'
+
 const MIN_RADIUS_RELATIVE = 0.3
-const TRACKS = [8, 16, 17, 18, 19].map((length) => {
-    return Array.from({length}, () => false)
-})
-const CUR_INDEXES = Array.from({length: TRACKS.length}, () => 0)
 
 // Notes:
 // . think about scaling canvas to avoid conversion on events (follow MDN-Link in resize-function)
 
-class StepFaker {
-    intervalId = 0
-
-    start(): void {
-        this.intervalId = window.setInterval(this.tick.bind(this), 250)
-    }
-
-    stop(): void {
-        if (this.intervalId) {
-            clearInterval(this.intervalId)
-        }
-    }
-
-    private tick(): void {
-        for (let index = 0; index < CUR_INDEXES.length; index++) {
-            CUR_INDEXES[index] = (CUR_INDEXES[index] + 1) % TRACKS[index].length
-        }
-    }
-}
-const faker = new StepFaker()
-
-export class MnmlRenderer {
+export class MnmlInterface {
     canvas
     context
     center!: {
@@ -41,12 +18,15 @@ export class MnmlRenderer {
     angles!: number[]
     running = false
 
+    mnml: Mnml
+
     debouncedResize!: VoidFunction
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement, mnml: Mnml) {
         if (!canvas || !canvas.getContext) {
             throw new Error('Canvas not useable')
         }
+        this.mnml = mnml
         this.canvas = canvas
         const context = canvas.getContext('2d')
         if (!context) {
@@ -95,26 +75,25 @@ export class MnmlRenderer {
         this.center = {x, y}
         const maxRadius = Math.min(x, y)
         const minRadius = maxRadius * MIN_RADIUS_RELATIVE
-        const trackWidth = (maxRadius - minRadius) / TRACKS.length
+        const tracks = this.mnml.tracks
+        const trackWidth = (maxRadius - minRadius) / tracks.length
 
-        this.radii = Array.from({length: TRACKS.length + 1}, (_, index) => {
+        this.radii = Array.from({length: tracks.length + 1}, (_, index) => {
             return minRadius + index * trackWidth
         })
 
-        this.angles = Array.from({length: TRACKS.length}, (_, index) => {
-            return (2 * Math.PI) / TRACKS[index].length
+        this.angles = Array.from({length: tracks.length}, (_, index) => {
+            return (2 * Math.PI) / tracks[index].length
         })
     }
 
     public startDrawing(): void {
         this.running = true
         window.requestAnimationFrame(this.draw.bind(this))
-        faker.start()
     }
 
     public stopDrawing(): void {
         this.running = false
-        faker.stop()
     }
 
     private draw(): void {
@@ -123,7 +102,8 @@ export class MnmlRenderer {
         // this.context.resetTransform()
         this.context.translate(this.center.x, this.center.y)
         this.context.rotate(-Math.PI / 2)
-        for (let index = 0; index < TRACKS.length; index++) {
+        const trackCount = this.mnml.tracks.length
+        for (let index = 0; index < trackCount; index++) {
             this.drawTrack(index)
         }
         this.context.restore()
@@ -133,15 +113,17 @@ export class MnmlRenderer {
     }
 
     private drawTrack(trackNumber: number): void {
-        const segmentCount = TRACKS[trackNumber].length
+        const track = this.mnml.tracks[trackNumber]
+        const segmentCount = track.length
         const angle = (2 * Math.PI) / segmentCount
         const innerRadius = this.radii[trackNumber]
         const outerRadius = this.radii[trackNumber + 1]
         this.context.save()
         const segment = this.createSegment(innerRadius, outerRadius, angle)
+        const indexes = this.mnml.indexes
         for (let index = 0; index < segmentCount; index++) {
-            const selected = TRACKS[trackNumber][index]
-            if (index === CUR_INDEXES[trackNumber]) {
+            const selected = track[index]
+            if (index === indexes[trackNumber]) {
                 this.context.fillStyle = selected
                     ? 'rgb(0, 0, 0)'
                     : 'rgb(80, 80, 80)'
@@ -182,6 +164,6 @@ export class MnmlRenderer {
 
         const track = this.radii.findIndex((trackInnerRadius) => trackInnerRadius > radius)! - 1
         const segment = Math.floor(angle / this.angles[track])
-        TRACKS[track][segment] = !TRACKS[track][segment]
+        this.mnml.toggleNote(track, segment)
     }
 }
