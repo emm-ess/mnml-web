@@ -111,6 +111,8 @@ module.exports = {
         'object-curly-spacing': ['error', 'never'],
         'arrow-parens': ['error', 'always'],
 
+        'import/no-unresolved': 0,
+
         // import sorting
         'sort-import': 0,
         'import/order': 0,
@@ -123,6 +125,7 @@ module.exports = {
             files: ['*.vue', '*.spec.ts'],
             rules: {
                 'unicorn/filename-case': 0,
+                'unicorn/no-null': 0,
             },
         },
         {

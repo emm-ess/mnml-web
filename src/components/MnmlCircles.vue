@@ -5,25 +5,23 @@
 <script lang="ts">
 import {Options, Vue} from 'vue-property-decorator'
 
-import {Mnml, MnmlInterface} from '../mnml'
+import {MnmlInterface} from '../mnml'
 
 @Options({
     name: 'MnmlCircles',
 })
 export default class MnmlCircles extends Vue {
     renderer: MnmlInterface | undefined
-    player: Mnml | undefined
 
     async mounted() {
-        this.player = await Mnml.getInstance()
-        this.renderer = new MnmlInterface(this.$el, this.player)
+        this.renderer = new MnmlInterface(this.$el, this.$mnml)
         this.renderer.startDrawing()
-        this.player.start()
+        this.$mnml.start()
     }
 
     unmounted() {
         this.renderer?.destroy()
-        this.player?.stop()
+        this.$mnml.stop()
     }
 
     handleClick(event: MouseEvent): void {
