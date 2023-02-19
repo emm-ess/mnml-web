@@ -5,7 +5,8 @@ import {COLORS} from '@/mnml/mnml-const'
 
 import type {Mnml} from './mnml'
 
-const MIN_RADIUS_RELATIVE = 0.3
+const MIN_RADIUS_RELATIVE = 0.2
+const INNER_CIRCLE_RELATIVE_RADIUS = 0.618
 
 // Notes:
 // . think about scaling canvas to avoid conversion on events (follow MDN-Link in resize-function)
@@ -79,11 +80,14 @@ export class MnmlInterface {
         const maxRadius = Math.min(x, y)
         const minRadius = maxRadius * MIN_RADIUS_RELATIVE
         const tracks = this.mnml.tracks
-        const trackWidth = (maxRadius - minRadius) / tracks.length
+        const innerCircleOuterRadius
+            = minRadius + ((maxRadius - minRadius) / tracks.length) * INNER_CIRCLE_RELATIVE_RADIUS
+        const trackWidth = (maxRadius - innerCircleOuterRadius) / (tracks.length - 1)
 
-        this.radii = Array.from({length: tracks.length + 1}, (_, index) => {
-            return minRadius + index * trackWidth
-        })
+        this.radii = [minRadius, innerCircleOuterRadius]
+        for (let index = 1; index < tracks.length + 1; index++) {
+            this.radii.push(innerCircleOuterRadius + index * trackWidth)
+        }
 
         this.angles = Array.from({length: tracks.length}, (_, index) => {
             return (2 * Math.PI) / tracks[index].length
