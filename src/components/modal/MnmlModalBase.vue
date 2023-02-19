@@ -39,5 +39,7 @@ withDefaults(
 </script>
 
 <style lang="sass">
-// not empty
+@use 'vanilla-framework' as *
+@include vf-base
+@include vf-p-modal
 </style>

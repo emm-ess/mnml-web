@@ -1,7 +1,11 @@
 import type {Output} from 'webmidi'
 import {WebMidi} from 'webmidi'
 
-const PITCHES = [60, 62, 64, 68, 70]
+import type {PitchIndex} from './mnml-const'
+import {DEFAULT_TRACK_LENGTH, SCALES} from './mnml-const'
+
+const PITCHES = [60, 36, 48, 60, 72]
+const SELECTED_PENTATONIC = SCALES.MAJOR
 
 function getLastOutput(): Output | undefined {
     if (!WebMidi.enabled) {
@@ -19,11 +23,11 @@ export class Mnml {
     private _output: Output | null | undefined
 
     // eslint-disable-next-line unicorn/consistent-function-scoping
-    private _tracks = [8, 16, 17, 18, 19].map((length) => {
+    private _tracks: (PitchIndex | false)[][] = DEFAULT_TRACK_LENGTH.map((length) => {
         return Array.from({length}, () => false)
     })
     // eslint-disable-next-line unicorn/consistent-function-scoping
-    private _indexes = Array.from({length: this._tracks.length}, () => 0)
+    private _indexes = Array.from({length: DEFAULT_TRACK_LENGTH.length}, () => 0)
 
     public get output(): Output | null | undefined {
         return this._output
@@ -40,7 +44,7 @@ export class Mnml {
         return this._indexes
     }
 
-    public get tracks(): readonly boolean[][] {
+    public get tracks(): readonly (PitchIndex | false)[][] {
         return this._tracks
     }
 
@@ -65,17 +69,22 @@ export class Mnml {
 
         for (let trackIndex = 0; trackIndex < this._indexes.length; trackIndex++) {
             const segmentIndex = this._indexes[trackIndex]
-            if (this._tracks[trackIndex][segmentIndex]) {
-                this._output.channels[trackIndex + 1].playNote(PITCHES[trackIndex])
+            const pitchIndex = this._tracks[trackIndex][segmentIndex]
+            if (pitchIndex === false) {
+                this._output.channels[trackIndex + 1].sendAllNotesOff()
             }
             else {
-                this._output.channels[trackIndex + 1].sendAllNotesOff()
+                const pitch = PITCHES[trackIndex] + SELECTED_PENTATONIC[pitchIndex]
+                this._output.channels[trackIndex + 1].playNote(pitch)
             }
             this._indexes[trackIndex] = (segmentIndex + 1) % this._tracks[trackIndex].length
         }
     }
 
-    public toggleNote(track: number, segment: number): void {
-        this._tracks[track][segment] = !this._tracks[track][segment]
+    public toggleNote(track: number, segment: number, pitchIndex: PitchIndex): void {
+        const currentPitchIndex = this._tracks[track][segment]
+        this._tracks[track][segment] = currentPitchIndex === pitchIndex
+            ? false
+            : pitchIndex
     }
 }

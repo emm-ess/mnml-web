@@ -32,5 +32,7 @@ export default class MnmlSelect<
 </script>
 
 <style lang="sass">
-// not empty
+@use 'vanilla-framework' as *
+@include vf-base
+@include vf-b-forms
 </style>

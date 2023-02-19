@@ -14,7 +14,7 @@
         "prettier": "prettier --write .",
         "lint": "npm-run-all -p lint:*",
         "lint:script": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.json --fix --ignore-path .gitignore",
-        "lint:style": "stylelint '**/*.{vue,htm,html,sass}' --cache --fix"
+        "lint:style": "stylelint '**/*.{vue,htm,html,sass}' --cache"
     },
     "dependencies": {
         "pinia": "^2.0.29",

@@ -1,6 +1,8 @@
 module.exports = {
     root: true,
 
+    fix: false,
+
     extends: ['stylelint-config-standard', 'stylelint-config-sass-guidelines', 'stylelint-config-outside-in-order'],
 
     plugins: [
@@ -29,7 +31,7 @@ module.exports = {
         'property-no-vendor-prefix': true,
         'selector-no-vendor-prefix': true,
         'value-no-vendor-prefix': true,
-        // 'max-nesting-depth': 4,
+        'max-nesting-depth': 3,
         'selector-max-id': 1,
         'selector-no-qualifying-type': null,
         'max-empty-lines': 3,

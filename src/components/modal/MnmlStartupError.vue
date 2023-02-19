@@ -67,5 +67,7 @@ export default class MnmlStartupError extends Vue {
 </script>
 
 <style lang="sass">
-// not empty
+@use 'vanilla-framework' as *
+@include vf-base
+@include vf-p-buttons
 </style>

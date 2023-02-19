@@ -1,5 +1,8 @@
 import {debounce} from 'throttle-debounce'
 
+import type {PitchIndex} from '@/mnml/mnml-const'
+import {COLORS} from '@/mnml/mnml-const'
+
 import type {Mnml} from './mnml'
 
 const MIN_RADIUS_RELATIVE = 0.3
@@ -122,15 +125,16 @@ export class MnmlInterface {
         const segment = this.createSegment(innerRadius, outerRadius, angle)
         const indexes = this.mnml.indexes
         for (let index = 0; index < segmentCount; index++) {
-            const selected = track[index]
+            const pitchIndex = track[index]
+            const selected = pitchIndex !== false
             if (index === indexes[trackNumber]) {
                 this.context.fillStyle = selected
-                    ? 'rgb(0, 0, 0)'
+                    ? `rgb(${COLORS[pitchIndex]})`
                     : 'rgb(80, 80, 80)'
             }
             else {
                 this.context.fillStyle = selected
-                    ? 'rgb(127, 127, 127)'
+                    ? `rgba(${COLORS[pitchIndex]}, 0.5)`
                     : 'rgb(255, 255, 255)'
             }
             this.context.fill(segment)
@@ -148,7 +152,10 @@ export class MnmlInterface {
         return segment
     }
 
-    public clicked(x: number, y: number): void {
+    public clicked(x: number, y: number, pitchIndex: PitchIndex): void {
+        if (0 > pitchIndex || pitchIndex >= 5) {
+            return
+        }
         const rect = this.canvas.getBoundingClientRect()
         x = x - rect.width / 2
         y = y - rect.height / 2
@@ -164,6 +171,6 @@ export class MnmlInterface {
 
         const track = this.radii.findIndex((trackInnerRadius) => trackInnerRadius > radius)! - 1
         const segment = Math.floor(angle / this.angles[track])
-        this.mnml.toggleNote(track, segment)
+        this.mnml.toggleNote(track, segment, pitchIndex)
     }
 }
