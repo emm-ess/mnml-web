@@ -1,0 +1,18 @@
+=ratio($ratio, $minusPadding: none)
+    $padding: $ratio
+
+    @if $minusPadding != none
+        $padding: calc(#{$ratio} - #{$minusPadding})
+
+    &::before
+        content: ''
+        width: 1px
+        margin-left: -1px
+        float: left
+        height: 0
+        padding-top: $padding
+
+    &::after
+        display: table
+        content: ''
+        clear: both

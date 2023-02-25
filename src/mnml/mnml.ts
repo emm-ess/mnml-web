@@ -1,11 +1,10 @@
 import type {Output} from 'webmidi'
 import {WebMidi} from 'webmidi'
 
-import type {PitchIndex} from './mnml-const'
+import type {PentatonicScale, PitchIndex} from './mnml-const'
 import {DEFAULT_TRACK_LENGTH, SCALES} from './mnml-const'
 
 const PITCHES = [60, 36, 48, 60, 72]
-const SELECTED_PENTATONIC = SCALES.MAJOR
 
 function getLastOutput(): Output | undefined {
     if (!WebMidi.enabled) {
@@ -19,8 +18,9 @@ function getLastOutput(): Output | undefined {
 }
 
 export class Mnml {
-    intervalId = 0
+    private intervalId = 0
     private _output: Output | null | undefined
+    scale: PentatonicScale = SCALES[0]
 
     // eslint-disable-next-line unicorn/consistent-function-scoping
     private _tracks: (PitchIndex | false)[][] = DEFAULT_TRACK_LENGTH.map((length) => {
@@ -67,6 +67,8 @@ export class Mnml {
             return
         }
 
+        const scale = this.scale.pitches
+
         for (let trackIndex = 0; trackIndex < this._indexes.length; trackIndex++) {
             const segmentIndex = this._indexes[trackIndex]
             const pitchIndex = this._tracks[trackIndex][segmentIndex]
@@ -74,7 +76,7 @@ export class Mnml {
                 this._output.channels[trackIndex + 1].sendAllNotesOff()
             }
             else {
-                const pitch = PITCHES[trackIndex] + SELECTED_PENTATONIC[pitchIndex]
+                const pitch = PITCHES[trackIndex] + scale[pitchIndex]
                 this._output.channels[trackIndex + 1].playNote(pitch)
             }
             this._indexes[trackIndex] = (segmentIndex + 1) % this._tracks[trackIndex].length

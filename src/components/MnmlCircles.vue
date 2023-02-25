@@ -9,17 +9,28 @@
         />
     </div>
 
-    <canvas ref="canvas" class="mnml-renderer" @click="handleClick"></canvas>
+    <div class="main-interface">
+        <canvas ref="canvas" @click="handleClick"></canvas>
+
+        <div class="inner-circle-settings">
+            <mnml-select id="pentatonic" :items="scales" v-model="$mnml.scale" item-title="name"
+                >Pentatonik</mnml-select
+            >
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
 import {Options, Ref, Vue} from 'vue-property-decorator'
 
+import MnmlSelect from '@/components/forms/MnmlSelect.vue'
+
 import type {PitchIndex} from '../mnml'
-import {COLORS, MnmlInterface} from '../mnml'
+import {COLORS, MnmlInterface, SCALES} from '../mnml'
 
 @Options({
     name: 'MnmlCircles',
+    components: {MnmlSelect},
 })
 export default class MnmlCircles extends Vue {
     @Ref()
@@ -28,6 +39,7 @@ export default class MnmlCircles extends Vue {
     colors = COLORS
     selectedPitchIndex: PitchIndex | null = null
     renderer: MnmlInterface | undefined
+    scales = SCALES
 
     async mounted() {
         this.renderer = new MnmlInterface(this.canvas, this.$mnml)
@@ -55,10 +67,6 @@ export default class MnmlCircles extends Vue {
 </script>
 
 <style lang="sass" scoped>
-.mnml-renderer
-    width: 100%
-    height: 100%
-
 .pitch-select
     button
         width: 60px
@@ -67,4 +75,18 @@ export default class MnmlCircles extends Vue {
 
         &.active
             border: 2px solid #000
+
+.main-interface
+    position: relative
+    width: 100vmin
+    aspect-ratio: 1
+
+.inner-circle-settings
+    position: absolute
+    top: 40%
+    left: 40%
+    width: 20%
+    height: 20%
+    overflow: hidden
+    border-radius: 50%
 </style>
