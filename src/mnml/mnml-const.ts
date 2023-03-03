@@ -9,9 +9,14 @@ export enum MNML_STATE {
     UNKNOWN,
 }
 
+export const VOICES_MIN = 1
+export const VOICES_MAX = 3
+
 export const DEFAULT_TRACK_LENGTH = [8, 16, 17, 18, 19] as const
 
 export type PitchIndex = 0 | 1 | 2 | 3 | 4
+
+export type Pattern = Array<PitchIndex | false>
 
 export type PentatonicScale = Readonly<{
     name: string

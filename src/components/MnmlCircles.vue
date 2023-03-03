@@ -13,6 +13,9 @@
         <canvas ref="canvas" @click="handleClick"></canvas>
 
         <div class="inner-circle-settings">
+            <mnml-number-input id="voices" :min="voicesMin" :max="voicesMax" v-model="$mnml.activeVoices"
+                >Voices</mnml-number-input
+            >
             <mnml-select id="pentatonic" :items="scales" v-model="$mnml.scale" item-title="name"
                 >Pentatonik</mnml-select
             >
@@ -23,14 +26,15 @@
 <script lang="ts">
 import {Options, Ref, Vue} from 'vue-property-decorator'
 
+import MnmlNumberInput from '@/components/forms/MnmlNumberInput.vue'
 import MnmlSelect from '@/components/forms/MnmlSelect.vue'
 
-import type {PitchIndex} from '../mnml'
-import {COLORS, MnmlInterface, SCALES} from '../mnml'
+import {type PitchIndex,VOICES_MAX} from '../mnml'
+import {COLORS, MnmlInterface, SCALES, VOICES_MIN} from '../mnml'
 
 @Options({
     name: 'MnmlCircles',
-    components: {MnmlSelect},
+    components: {MnmlNumberInput, MnmlSelect},
 })
 export default class MnmlCircles extends Vue {
     @Ref()
@@ -40,6 +44,8 @@ export default class MnmlCircles extends Vue {
     selectedPitchIndex: PitchIndex | null = null
     renderer: MnmlInterface | undefined
     scales = SCALES
+    voicesMin = VOICES_MIN
+    voicesMax = VOICES_MAX
 
     async mounted() {
         this.renderer = new MnmlInterface(this.canvas, this.$mnml)

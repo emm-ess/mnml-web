@@ -1,10 +1,14 @@
 import type {Output} from 'webmidi'
 import {WebMidi} from 'webmidi'
 
-import type {PentatonicScale, PitchIndex} from './mnml-const'
+import {MnmlTicker} from '@/mnml/mnml-ticker'
+import {MnmlVoice} from '@/mnml/mnml-voice'
+
+import type {Pattern, PentatonicScale, PitchIndex} from './mnml-const'
 import {DEFAULT_TRACK_LENGTH, SCALES} from './mnml-const'
 
 const PITCHES = [60, 36, 48, 60, 72]
+const NUM_VOICES = [1, 3, 3, 3, 3]
 
 function getLastOutput(): Output | undefined {
     if (!WebMidi.enabled) {
@@ -21,13 +25,14 @@ export class Mnml {
     private intervalId = 0
     private _output: Output | null | undefined
     scale: PentatonicScale = SCALES[0]
+    private _activeVoices = 1
+    voicesPerTrack: MnmlVoice[][] = []
+    private tickers = [new MnmlTicker(120), new MnmlTicker(140), new MnmlTicker(160)] as const
 
     // eslint-disable-next-line unicorn/consistent-function-scoping
     private _tracks: (PitchIndex | false)[][] = DEFAULT_TRACK_LENGTH.map((length) => {
         return Array.from({length}, () => false)
     })
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    private _indexes = Array.from({length: DEFAULT_TRACK_LENGTH.length}, () => 0)
 
     public get output(): Output | null | undefined {
         return this._output
@@ -40,46 +45,59 @@ export class Mnml {
         this._output = output
     }
 
-    public get indexes(): readonly number[] {
-        return this._indexes
+    public get tracks(): readonly Pattern[] {
+        return this._tracks
     }
 
-    public get tracks(): readonly (PitchIndex | false)[][] {
-        return this._tracks
+    public get activeVoices() {
+        return this._activeVoices
+    }
+
+    public set activeVoices(voices) {
+        this._activeVoices = voices
+        this.setTickers()
     }
 
     constructor() {
         this._output = getLastOutput()
+
+        let outputIndex = 1
+        for (const [trackIndex, numberVoicesForTrack] of NUM_VOICES.entries()) {
+            const voicesOfTrack = []
+
+            for (let index = 0; index < numberVoicesForTrack; index++) {
+                const voice = new MnmlVoice(this._tracks[trackIndex], outputIndex, PITCHES[trackIndex], this)
+                voicesOfTrack.push(voice)
+                this.tickers[index].addTickable(voice)
+                outputIndex++
+                // channel 10 is used for percussion
+                if (outputIndex === 10) {
+                    outputIndex++
+                }
+            }
+
+            this.voicesPerTrack.push(voicesOfTrack)
+        }
+    }
+
+    private setTickers(): void {
+        for (const [index, ticker] of this.tickers.entries()) {
+            if (index < this._activeVoices) {
+                ticker.start()
+            }
+            else {
+                ticker.stop()
+            }
+        }
     }
 
     start(): void {
-        this.intervalId = window.setInterval(this.tick.bind(this), 250)
+        this.setTickers()
     }
 
     stop(): void {
-        if (this.intervalId) {
-            clearInterval(this.intervalId)
-        }
-    }
-
-    private tick(): void {
-        if (!this._output) {
-            return
-        }
-
-        const scale = this.scale.pitches
-
-        for (let trackIndex = 0; trackIndex < this._indexes.length; trackIndex++) {
-            const segmentIndex = this._indexes[trackIndex]
-            const pitchIndex = this._tracks[trackIndex][segmentIndex]
-            if (pitchIndex === false) {
-                this._output.channels[trackIndex + 1].sendAllNotesOff()
-            }
-            else {
-                const pitch = PITCHES[trackIndex] + scale[pitchIndex]
-                this._output.channels[trackIndex + 1].playNote(pitch)
-            }
-            this._indexes[trackIndex] = (segmentIndex + 1) % this._tracks[trackIndex].length
+        for (const ticker of this.tickers) {
+            ticker.stop()
         }
     }
 

@@ -44,7 +44,8 @@ export async function createMnml(): Promise<Plugin> {
                     return mnmlState.value
                 },
             })
-            app.config.globalProperties.$mnml = mnmlInstance
+            // @ts-ignore
+            app.config.globalProperties.$mnml = ref(mnmlInstance).value
         },
     }
 }
