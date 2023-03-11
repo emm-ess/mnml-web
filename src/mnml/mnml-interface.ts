@@ -154,9 +154,8 @@ export class MnmlInterface {
         this.context.translate(this.center.x, this.center.y)
         this.context.rotate(-Math.PI / 2)
         const trackCount = this.mnml.tracks.length
-        this.drawTrack(0, 1)
-        for (let index = 1; index < trackCount; index++) {
-            this.drawTrack(index, this.mnml.activeVoices)
+        for (let index = 0; index < trackCount; index++) {
+            this.drawTrack(index)
         }
         this.context.restore()
         if (this.running) {
@@ -164,14 +163,25 @@ export class MnmlInterface {
         }
     }
 
-    private drawTrack(trackNumber: number, voices: number): void {
+    private drawTrack(trackNumber: number): void {
         const track = this.mnml.voicesPerTrack[trackNumber]
         const renderInfo = this.trackRenderInfos[trackNumber]
         const angle = renderInfo.angle
-        for (let voiceIndex = 0; voiceIndex < voices; voiceIndex++) {
-            const segment = renderInfo.segments[voices - 1][voiceIndex]
-            const voice = track[voiceIndex]
-            this.drawVoice(voice, angle, segment)
+        // eslint-disable-next-line unicorn/no-array-reduce
+        const activeVoices = track.reduce((sum, voice) => {
+            if (voice.active) {
+                sum++
+            }
+            return sum
+        }, -1)
+        const segmentInfo = renderInfo.segments[activeVoices]
+        let activeVoiceIndex = 0
+        for (const voice of track) {
+            if (voice.active) {
+                const segment = segmentInfo[activeVoiceIndex]
+                this.drawVoice(voice, angle, segment)
+                activeVoiceIndex++
+            }
         }
     }
 

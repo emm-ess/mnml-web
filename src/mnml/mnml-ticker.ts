@@ -1,19 +1,17 @@
-export type Tickable = {
-    tick: VoidFunction
-}
+import type {MnmlVoice} from '@/mnml/mnml-voice'
 
 export class MnmlTicker {
-    intervalId = 0
+    private intervalId = 0
     /** in bpm */
-    tempo: number
-    tickables: Tickable[]
+    private tempo: number
+    tickables: MnmlVoice[]
 
-    constructor(tempo: number, tickables: Tickable[] = []) {
+    constructor(tempo: number, tickables: MnmlVoice[] = []) {
         this.tempo = tempo
         this.tickables = tickables
     }
 
-    addTickable(tickable: Tickable): void {
+    addTickable(tickable: MnmlVoice): void {
         if (!this.tickables.includes(tickable)) {
             this.tickables.push(tickable)
         }
@@ -35,7 +33,7 @@ export class MnmlTicker {
         }
     }
 
-    tick(): void {
+    private tick(): void {
         for (const tickable of this.tickables) {
             tickable.tick()
         }

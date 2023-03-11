@@ -7,6 +7,8 @@ export class MnmlVoice {
     basePitch: number
     mnml: Mnml
     outputIndex: number
+    active = false
+    shouldStop = false
 
     constructor(pattern: Pattern, outputIndex: number, basePitch: number, mnml: Mnml) {
         this.pattern = pattern
@@ -15,16 +17,31 @@ export class MnmlVoice {
         this.mnml = mnml
     }
 
+    public start() {
+        this.active = true
+        this.shouldStop = false
+    }
+
+    public stop() {
+        this.shouldStop = true
+    }
+
     public tick() {
-        const pitchIndex = this.pattern[this.index]
-        const channel = this.mnml.output!.channels[this.outputIndex]
-        if (pitchIndex === false) {
-            channel.sendAllNotesOff()
+        if (this.active) {
+            const pitchIndex = this.pattern[this.index]
+            const channel = this.mnml.output!.channels[this.outputIndex]
+            if (pitchIndex === false) {
+                channel.sendAllNotesOff()
+            }
+            else {
+                const pitch = this.basePitch + this.mnml.scale.pitches[pitchIndex]
+                channel.playNote(pitch)
+            }
+            this.index = (this.index + 1) % this.pattern.length
+
+            if (this.shouldStop && this.index === 0) {
+                this.active = false
+            }
         }
-        else {
-            const pitch = this.basePitch + this.mnml.scale.pitches[pitchIndex]
-            channel.playNote(pitch)
-        }
-        this.index = (this.index + 1) % this.pattern.length
     }
 }

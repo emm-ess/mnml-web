@@ -55,7 +55,7 @@ export class Mnml {
 
     public set activeVoices(voices) {
         this._activeVoices = voices
-        this.setTickers()
+        this.setActiveVoices()
     }
 
     constructor() {
@@ -80,19 +80,26 @@ export class Mnml {
         }
     }
 
-    private setTickers(): void {
+    private setActiveVoices(): void {
         for (const [index, ticker] of this.tickers.entries()) {
             if (index < this._activeVoices) {
-                ticker.start()
+                for (const voice of ticker.tickables) {
+                    voice.start()
+                }
             }
             else {
-                ticker.stop()
+                for (const voice of ticker.tickables) {
+                    voice.stop()
+                }
             }
         }
     }
 
     start(): void {
-        this.setTickers()
+        for (const ticker of this.tickers) {
+            ticker.start()
+        }
+        this.setActiveVoices()
     }
 
     stop(): void {
