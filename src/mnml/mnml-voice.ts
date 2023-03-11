@@ -28,6 +28,12 @@ export class MnmlVoice {
 
     public tick() {
         if (this.active) {
+            this.index = (this.index + 1) % this.pattern.length
+            if (this.shouldStop && this.index === 0) {
+                this.active = false
+                return
+            }
+
             const pitchIndex = this.pattern[this.index]
             const channel = this.mnml.output!.channels[this.outputIndex]
             if (pitchIndex === false) {
@@ -36,11 +42,6 @@ export class MnmlVoice {
             else {
                 const pitch = this.basePitch + this.mnml.scale.pitches[pitchIndex]
                 channel.playNote(pitch)
-            }
-            this.index = (this.index + 1) % this.pattern.length
-
-            if (this.shouldStop && this.index === 0) {
-                this.active = false
             }
         }
     }
