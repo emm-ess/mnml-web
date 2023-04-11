@@ -28,24 +28,30 @@ function updateMnmlState(mnmlInstance: Mnml): void {
     mnmlState.value = newState
 }
 
-export async function createMnml(): Promise<Plugin> {
+const mnmlInstance = ref<Mnml>()
+
+export async function createMnml(): Promise<void> {
     if (!WebMidi.enabled) {
         await WebMidi.enable()
     }
 
-    const mnmlInstance = new Mnml()
-    updateMnmlState(mnmlInstance)
+    mnmlInstance.value = new Mnml()
+    updateMnmlState(mnmlInstance.value)
+}
 
-    return {
-        install(app) {
-            // app.config.globalProperties.$mnmlState = mnmlState
-            Object.defineProperty(app.config.globalProperties, '$mnmlState', {
-                get() {
-                    return mnmlState.value
-                },
-            })
-            // @ts-ignore
-            app.config.globalProperties.$mnml = ref(mnmlInstance).value
-        },
-    }
+export function useMnml() {
+    return mnmlInstance.value as Mnml
+}
+
+export const MnmlVuePlugin: Plugin = {
+    install(app) {
+        // app.config.globalProperties.$mnmlState = mnmlState
+        Object.defineProperty(app.config.globalProperties, '$mnmlState', {
+            get() {
+                return mnmlState.value
+            },
+        })
+        // @ts-ignore
+        app.config.globalProperties.$mnml = mnmlInstance
+    },
 }

@@ -3,7 +3,7 @@
         <div class="pitch-select">
             <button :class="{active: selectedPitchIndex === -1}" class="unselect" @click="selectPitch(-1)" />
             <button
-                v-for="(color, index) of colors"
+                v-for="(color, index) of COLORS"
                 :key="color"
                 :class="{active: selectedPitchIndex === index}"
                 :style="{background: `rgb(${color})`}"
@@ -14,64 +14,56 @@
         <canvas ref="canvas" @click="handleClick"></canvas>
 
         <div class="inner-circle-settings">
-            <mnml-number-input id="voices" :min="voicesMin" :max="voicesMax" v-model="$mnml.activeVoices"
+            <mnml-number-input id="voices" :min="VOICES_MIN" :max="VOICES_MAX" v-model="mnml.activeVoices"
                 >Voices</mnml-number-input
             >
-            <mnml-select id="pentatonic" :items="scales" v-model="$mnml.scale" item-title="name"
-                >Pentatonik</mnml-select
-            >
+            <mnml-select id="pentatonic" :items="SCALES" v-model="mnml.scale" item-title="name">Pentatonik</mnml-select>
         </div>
     </div>
 </template>
 
-<script lang="ts">
-import {Options, Ref, Vue} from 'vue-property-decorator'
+<script lang="ts" setup>
+import {onMounted, onUnmounted, ref} from 'vue'
 
 import MnmlNumberInput from '@/components/forms/MnmlNumberInput.vue'
 import MnmlSelect from '@/components/forms/MnmlSelect.vue'
 
-import {type PitchIndex, VOICES_MAX} from '../mnml'
+import {type PitchIndex, useMnml, VOICES_MAX} from '../mnml'
 import {COLORS, MnmlInterface, SCALES, VOICES_MIN} from '../mnml'
 
-@Options({
-    name: 'MnmlCircles',
-    components: {MnmlNumberInput, MnmlSelect},
+const mnml = useMnml()
+
+const canvas = ref<HTMLCanvasElement>()
+const selectedPitchIndex = ref<PitchIndex | -1 | null>(null)
+let renderer: MnmlInterface
+
+onMounted(() => {
+    if (!canvas.value || !mnml) {
+        return
+    }
+    renderer = new MnmlInterface(canvas.value, mnml)
+    renderer.startDrawing()
+    mnml.start()
 })
-export default class MnmlCircles extends Vue {
-    @Ref()
-    private readonly canvas!: HTMLCanvasElement
 
-    colors = COLORS
-    selectedPitchIndex: PitchIndex | -1 | null = null
-    renderer: MnmlInterface | undefined
-    scales = SCALES
-    voicesMin = VOICES_MIN
-    voicesMax = VOICES_MAX
+onUnmounted(() => {
+    renderer?.destroy()
+    mnml.stop()
+})
 
-    async mounted() {
-        this.renderer = new MnmlInterface(this.canvas, this.$mnml)
-        this.renderer.startDrawing()
-        this.$mnml.start()
-    }
+function selectPitch(index: number): void {
+    selectedPitchIndex.value = selectedPitchIndex.value === index
+        ? null
+        : (index as PitchIndex | -1)
+}
 
-    unmounted() {
-        this.renderer?.destroy()
-        this.$mnml.stop()
-    }
-
-    selectPitch(index: number): void {
-        this.selectedPitchIndex = this.selectedPitchIndex === index
+function handleClick(event: MouseEvent): void {
+    const currentValue = selectedPitchIndex.value
+    if (currentValue !== null) {
+        const pitchIndex = currentValue < 0
             ? null
-            : (index as PitchIndex | -1)
-    }
-
-    handleClick(event: MouseEvent): void {
-        if (this.selectedPitchIndex !== null) {
-            const pitchIndex = this.selectedPitchIndex < 0
-                ? null
-                : (this.selectedPitchIndex as PitchIndex)
-            this.renderer?.clicked(event.offsetX, event.offsetY, pitchIndex)
-        }
+            : (currentValue as PitchIndex)
+        renderer?.clicked(event.offsetX, event.offsetY, pitchIndex)
     }
 }
 </script>
