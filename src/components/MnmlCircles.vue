@@ -1,15 +1,16 @@
 <template>
-    <div class="pitch-select">
-        <button
-            v-for="(color, index) of colors"
-            :key="color"
-            :class="{active: selectedPitchIndex === index}"
-            :style="{background: `rgb(${color})`}"
-            @click="selectPitch(index)"
-        />
-    </div>
-
     <div class="main-interface">
+        <div class="pitch-select">
+            <button :class="{active: selectedPitchIndex === -1}" class="unselect" @click="selectPitch(-1)" />
+            <button
+                v-for="(color, index) of colors"
+                :key="color"
+                :class="{active: selectedPitchIndex === index}"
+                :style="{background: `rgb(${color})`}"
+                @click="selectPitch(index)"
+            />
+        </div>
+
         <canvas ref="canvas" @click="handleClick"></canvas>
 
         <div class="inner-circle-settings">
@@ -29,7 +30,7 @@ import {Options, Ref, Vue} from 'vue-property-decorator'
 import MnmlNumberInput from '@/components/forms/MnmlNumberInput.vue'
 import MnmlSelect from '@/components/forms/MnmlSelect.vue'
 
-import {type PitchIndex,VOICES_MAX} from '../mnml'
+import {type PitchIndex, VOICES_MAX} from '../mnml'
 import {COLORS, MnmlInterface, SCALES, VOICES_MIN} from '../mnml'
 
 @Options({
@@ -41,7 +42,7 @@ export default class MnmlCircles extends Vue {
     private readonly canvas!: HTMLCanvasElement
 
     colors = COLORS
-    selectedPitchIndex: PitchIndex | null = null
+    selectedPitchIndex: PitchIndex | -1 | null = null
     renderer: MnmlInterface | undefined
     scales = SCALES
     voicesMin = VOICES_MIN
@@ -61,31 +62,47 @@ export default class MnmlCircles extends Vue {
     selectPitch(index: number): void {
         this.selectedPitchIndex = this.selectedPitchIndex === index
             ? null
-            : (index as PitchIndex)
+            : (index as PitchIndex | -1)
     }
 
     handleClick(event: MouseEvent): void {
         if (this.selectedPitchIndex !== null) {
-            this.renderer?.clicked(event.offsetX, event.offsetY, this.selectedPitchIndex)
+            const pitchIndex = this.selectedPitchIndex < 0
+                ? null
+                : (this.selectedPitchIndex as PitchIndex)
+            this.renderer?.clicked(event.offsetX, event.offsetY, pitchIndex)
         }
     }
 }
 </script>
 
 <style lang="sass" scoped>
-.pitch-select
-    button
-        width: 60px
-        height: 60px
-        border-radius: 50%
-
-        &.active
-            border: 2px solid #000
-
 .main-interface
     position: relative
     width: 100vmin
     aspect-ratio: 1
+
+
+.pitch-select
+    position: absolute
+    display: grid
+    grid: repeat(3, 1fr) / repeat(3, 1fr)
+    gap: 8%
+    width: 22%
+    height: 22%
+
+    button
+        width: 100%
+        height: 100%
+        margin: 0
+        border: 1px solid #000
+        border-radius: 50%
+
+        &.active
+            box-shadow: 0 0 6px 2px #000
+
+        &:nth-child(6)
+            grid-column: 1
 
 .inner-circle-settings
     position: absolute

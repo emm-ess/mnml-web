@@ -108,9 +108,9 @@ export class Mnml {
         }
     }
 
-    public toggleNote(track: number, segment: number, pitchIndex: PitchIndex): void {
+    public toggleNote(track: number, segment: number, pitchIndex: PitchIndex | null): void {
         const currentPitchIndex = this._tracks[track][segment]
-        this._tracks[track][segment] = currentPitchIndex === pitchIndex
+        this._tracks[track][segment] = currentPitchIndex === pitchIndex || pitchIndex === null
             ? false
             : pitchIndex
     }

@@ -208,8 +208,8 @@ export class MnmlInterface {
         this.context.restore()
     }
 
-    public clicked(x: number, y: number, pitchIndex: PitchIndex): void {
-        if (0 > pitchIndex || pitchIndex >= 5) {
+    public clicked(x: number, y: number, pitchIndex: PitchIndex | null): void {
+        if (pitchIndex !== null && (0 > pitchIndex || pitchIndex >= 5)) {
             return
         }
         const rect = this.canvas.getBoundingClientRect()
