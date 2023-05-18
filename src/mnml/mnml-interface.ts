@@ -7,6 +7,9 @@ import type {MnmlVoice} from './mnml-voice'
 
 const MIN_RADIUS_RELATIVE = 0.2
 const INNER_CIRCLE_RELATIVE_RADIUS = 0.618
+const SPACE_BETWEEN_TRACKS = 12
+const SPACE_BETWEEN_TRACKS_HALF = SPACE_BETWEEN_TRACKS / 2
+const SPACE_BETWEEN_VOICES = 4
 
 // Notes:
 // . think about scaling canvas to avoid conversion on events (follow MDN-Link in resize-function)
@@ -94,20 +97,30 @@ export class MnmlInterface {
         const voiceArray = Array.from({length: VOICES_MAX - VOICES_MIN + 1}, (_, index) => {
             return index + 1
         })
-        const voiceWidths = voiceArray.map((voice) => baseTrackWidth / voice)
+
+        const voiceWidths = voiceArray.map((voice) => {
+            return (baseTrackWidth - SPACE_BETWEEN_TRACKS - SPACE_BETWEEN_VOICES * (voice - 1)) / voice
+        })
 
         this.trackRenderInfos = [
-            MnmlInterface.getInnerTrackRenderInfo(tracks[0].length, minRadius, innerCircleOuterRadius),
+            MnmlInterface.getInnerTrackRenderInfo(
+                tracks[0].length,
+                minRadius,
+                innerCircleOuterRadius - SPACE_BETWEEN_TRACKS_HALF,
+            ),
         ]
+
         for (let trackIndex = 1; trackIndex < tracks.length; trackIndex++) {
             const angle = (2 * Math.PI) / tracks[trackIndex].length
-            const trackBaseRadius = innerCircleOuterRadius + baseTrackWidth * (trackIndex - 1)
+            const trackBaseRadius
+                = innerCircleOuterRadius + baseTrackWidth * (trackIndex - 1) + SPACE_BETWEEN_TRACKS_HALF
             const segments = voiceArray.map((voice) => {
                 const segments: Path2D[] = []
                 for (let voiceIndex = 0; voiceIndex < voice; voiceIndex++) {
-                    const innerRadius = trackBaseRadius + voiceWidths[voice - 1] * voiceIndex
+                    const innerRadius
+                        = trackBaseRadius + voiceWidths[voice - 1] * voiceIndex + SPACE_BETWEEN_VOICES * voiceIndex
                     const outerRadius = innerRadius + voiceWidths[voice - 1]
-                    const segment = MnmlInterface.createSegment(innerRadius, outerRadius, angle)
+                    const segment = MnmlInterface.createSegment(innerRadius, outerRadius, angle * 0.98)
                     segments.push(segment)
                 }
                 return segments
@@ -122,7 +135,7 @@ export class MnmlInterface {
         innerCircleOuterRadius: number,
     ): TrackRenderInfo {
         const angle = (2 * Math.PI) / segmentCount
-        const segment = MnmlInterface.createSegment(minRadius, innerCircleOuterRadius, angle)
+        const segment = MnmlInterface.createSegment(minRadius, innerCircleOuterRadius - 2, angle * 0.98)
         return {
             innerRadius: minRadius,
             angle,
@@ -199,10 +212,9 @@ export class MnmlInterface {
             else {
                 this.context.fillStyle = selected
                     ? `rgba(${COLORS[pitchIndex]}, 0.5)`
-                    : 'rgb(255, 255, 255)'
+                    : 'rgb(220, 220, 220)'
             }
             this.context.fill(segment)
-            this.context.stroke(segment)
             this.context.rotate(angle)
         }
         this.context.restore()
