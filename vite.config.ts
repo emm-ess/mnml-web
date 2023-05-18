@@ -19,10 +19,10 @@ export default defineConfig({
                 vueTsc: true,
                 eslint: {
                     lintCommand:
-                          'eslint --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.json --fix --ignore-path .gitignore .',
+                          'eslint --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.json --ignore-path .gitignore .',
                 },
                 stylelint: {
-                    lintCommand: 'stylelint \'**/*.{vue,htm,html,sass}\' --cache --fix',
+                    lintCommand: 'stylelint \'**/*.{vue,htm,html,sass}\' --cache',
                 },
             }),
         vue(),
