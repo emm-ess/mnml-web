@@ -1,4 +1,3 @@
-import type {Plugin} from 'vue'
 import {ref} from 'vue'
 import {WebMidi} from 'webmidi'
 
@@ -40,18 +39,8 @@ export async function createMnml(): Promise<void> {
 }
 
 export function useMnml() {
-    return mnmlInstance.value as Mnml
-}
-
-export const MnmlVuePlugin: Plugin = {
-    install(app) {
-        // app.config.globalProperties.$mnmlState = mnmlState
-        Object.defineProperty(app.config.globalProperties, '$mnmlState', {
-            get() {
-                return mnmlState.value
-            },
-        })
-        // @ts-ignore
-        app.config.globalProperties.$mnml = mnmlInstance
-    },
+    return {
+        mnml: mnmlInstance.value as Mnml,
+        state: mnmlState,
+    }
 }

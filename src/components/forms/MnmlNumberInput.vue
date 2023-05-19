@@ -3,34 +3,38 @@
         <slot />
     </label>
     <div class="input-line">
-        <button :disabled="value <= min" @click.prevent="() => change(-1)">-</button>
+        <button :disabled="modelValue <= min" @click.prevent="() => change(-1)">-</button>
         <input type="number" :name="id" :id="id" :min="min" :max="max" v-model="value" />
-        <button :disabled="value >= max" @click.prevent="() => change(1)">+</button>
+        <button :disabled="modelValue >= max" @click.prevent="() => change(1)">+</button>
     </div>
 </template>
 
-<script lang="ts">
-import {Model, Options, Prop, Vue} from 'vue-property-decorator'
+<script lang="ts" setup>
+import {computed} from 'vue'
 
-@Options({
-    name: 'MnmlSelect',
+const props = defineProps<{
+    id: string
+    min: number
+    max: number
+    modelValue: number
+}>()
+
+const emit = defineEmits<{
+    (event: 'update:modelValue', value: number): void
+}>()
+
+const value = computed({
+    get() {
+        return props.modelValue
+    },
+    set(value) {
+        emit('update:modelValue', value)
+    },
 })
-export default class MnmlSelect extends Vue {
-    @Model('modelValue', {type: Number})
-        value!: number
 
-    @Prop({type: String, required: true})
-    readonly id!: string
-
-    @Prop({type: Number, required: true})
-    readonly min!: number
-
-    @Prop({type: Number, required: true})
-    readonly max!: number
-
-    change(amount: number): void {
-        this.value = Math.min(Math.max(this.value + amount, this.min), this.max)
-    }
+function change(amount: number): void {
+    const value = Math.min(Math.max(props.modelValue + amount, props.min), props.max)
+    emit('update:modelValue', value)
 }
 </script>
 

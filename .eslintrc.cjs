@@ -112,6 +112,16 @@ module.exports = {
         'object-curly-spacing': ['error', 'never'],
         'arrow-parens': ['error', 'always'],
 
+        'unicorn/prevent-abbreviations': [
+            'error',
+            {
+                allowList: {
+                    props: true,
+                    Props: true,
+                },
+            },
+        ],
+
         'import/no-unresolved': 0,
 
         // import sorting

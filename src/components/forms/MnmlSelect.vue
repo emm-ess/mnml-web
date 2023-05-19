@@ -7,28 +7,42 @@
     </select>
 </template>
 
-<script lang="ts">
-import {Model, Options, Prop, Vue} from 'vue-property-decorator'
+<script lang="ts" setup>
+import {computed} from 'vue'
 
-@Options({
-    name: 'MnmlSelect',
-})
-export default class MnmlSelect<
-    ValueType extends Record<any, unknown> & {[key in ItemTitle]: string},
-    ItemTitle extends string,
-> extends Vue {
-    @Model('modelValue')
-        value!: ValueType
+// TODO: have a look again for generic types, was:
+// <
+//     ValueType extends Record<any, unknown> & {[key in ItemTitle]: string},
+//     ItemTitle extends string,
+// >
+type ItemTitle = string
+type ModelValue = any
 
-    @Prop({type: Array, required: true})
-    readonly items!: ValueType[]
-
-    @Prop({type: String, required: true})
-    readonly id!: string
-
-    @Prop({type: String, default: 'title'})
-    readonly itemTitle!: ItemTitle
+type Props = {
+    id: string
+    items: ModelValue[]
+    itemTitle?: ItemTitle
+    modelValue: ModelValue
 }
+
+// TODO: this is actually valid => error in Vue Types?
+// @ts-ignore
+const props = withDefaults(defineProps<Props>(), {
+    itemTitle: 'title',
+})
+
+const emit = defineEmits<{
+    (event: 'update:modelValue', value: ModelValue): void
+}>()
+
+const value = computed({
+    get(): ModelValue {
+        return props.modelValue
+    },
+    set(value: ModelValue) {
+        emit('update:modelValue', value)
+    },
+})
 </script>
 
 <style lang="sass">

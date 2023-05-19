@@ -31,7 +31,7 @@ import MnmlSelect from '@/components/forms/MnmlSelect.vue'
 import {type PitchIndex, useMnml, VOICES_MAX} from '../mnml'
 import {COLORS, MnmlInterface, SCALES, VOICES_MIN} from '../mnml'
 
-const mnml = useMnml()
+const {mnml} = useMnml()
 
 const canvas = ref<HTMLCanvasElement>()
 const selectedPitchIndex = ref<PitchIndex | -1 | null>(null)
