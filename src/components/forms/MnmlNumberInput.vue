@@ -3,9 +3,20 @@
         <slot />
     </label>
     <div class="input-line">
-        <button :disabled="modelValue <= min" @click.prevent="() => change(-1)">-</button>
-        <input type="number" :name="id" :id="id" :min="min" :max="max" v-model="value" />
-        <button :disabled="modelValue >= max" @click.prevent="() => change(1)">+</button>
+        <button :disabled="modelValue <= min" @click.prevent="() => change(-1)">
+            -
+        </button>
+        <input
+            :id="id"
+            v-model="value"
+            type="number"
+            :name="id"
+            :min="min"
+            :max="max"
+        >
+        <button :disabled="modelValue >= max" @click.prevent="() => change(1)">
+            +
+        </button>
     </div>
 </template>
 
@@ -19,9 +30,7 @@ const props = defineProps<{
     modelValue: number
 }>()
 
-const emit = defineEmits<{
-    (event: 'update:modelValue', value: number): void
-}>()
+const emit = defineEmits<(event: 'update:modelValue', value: number) => void>()
 
 const value = computed({
     get() {

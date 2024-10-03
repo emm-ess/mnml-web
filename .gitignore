@@ -37,6 +37,7 @@ junit.xml
 
 ## ------------------------ TypeScript + JavaScript
 typings/
+*.tsbuildinfo
 
 ## ------------------------ Sass
 .sass-cache/

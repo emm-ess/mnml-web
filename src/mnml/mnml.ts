@@ -29,7 +29,6 @@ export class Mnml {
     voicesPerTrack: MnmlVoice[][] = []
     private tickers = [new MnmlTicker(120), new MnmlTicker(140), new MnmlTicker(160)] as const
 
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     private _tracks: (PitchIndex | false)[][] = DEFAULT_TRACK_LENGTH.map((length) => {
         return Array.from({length}, () => false)
     })
@@ -110,6 +109,7 @@ export class Mnml {
 
     public toggleNote(track: number, segment: number, pitchIndex: PitchIndex | null): void {
         const currentPitchIndex = this._tracks[track][segment]
+        // eslint-disable-next-line sonarjs/different-types-comparison
         this._tracks[track][segment] = currentPitchIndex === pitchIndex || pitchIndex === null
             ? false
             : pitchIndex

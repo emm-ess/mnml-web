@@ -1,33 +1,46 @@
 <template>
     <template v-if="state === MNML_STATE.MIDI_UNAVAILABLE">
         <mnml-modal-base :closable="false">
-            <template #header>Keine Midi Unterstützung</template>
+            <template #header>
+                Keine Midi Unterstützung
+            </template>
             Dieser Browser hat keine Unterstützung für Midi.
         </mnml-modal-base>
     </template>
 
     <template v-else-if="state === MNML_STATE.MIDI_NOT_ENABLED">
         <mnml-modal-base :closable="false">
-            <template #header>Midi Unterstützung nicht erlaubt</template>
+            <template #header>
+                Midi Unterstützung nicht erlaubt
+            </template>
             Midi wurde für diese Webseite nicht erlaubt.
         </mnml-modal-base>
     </template>
 
     <template v-else-if="state === MNML_STATE.NO_OUTPUT_AVAILABLE">
         <mnml-modal-base :closable="false">
-            <template #header>Keine Midi Geräte</template>
+            <template #header>
+                Keine Midi Geräte
+            </template>
             Es konnten keine Midi-Geräte gefunden werden.
         </mnml-modal-base>
     </template>
 
     <template v-else-if="state === MNML_STATE.NO_OUTPUT_SELECTED">
         <mnml-modal-base :closable="false">
-            <template #header>Kein Midi Gerät ausgewählt</template>
+            <template #header>
+                Kein Midi Gerät ausgewählt
+            </template>
 
             <form @submit.prevent="setMidiInput">
-                <mnml-select id="output" v-model="selectedOutput" :items="WebMidi.outputs" item-title="name"
-                    >Gerät</mnml-select
+                <mnml-select
+                    id="output"
+                    v-model="selectedOutput"
+                    :items="WebMidi.outputs"
+                    item-title="name"
                 >
+                    Gerät
+                </mnml-select>
 
                 <footer class="p-modal__footer">
                     <button class="p-button--positive u-no-margin--bottom" :disabled="!selectedOutput">

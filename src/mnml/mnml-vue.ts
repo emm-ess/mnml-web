@@ -7,12 +7,12 @@ import {MNML_STATE} from './mnml-const'
 export const mnmlState = ref(MNML_STATE.UNKNOWN)
 
 function updateMnmlState(mnmlInstance: Mnml): void {
-    let newState = MNML_STATE.UNKNOWN
+    let newState
     // @ts-ignore
     if (!navigator.requestMIDIAccess) {
         newState = MNML_STATE.MIDI_UNAVAILABLE
     }
-    if (!WebMidi.enabled) {
+    else if (!WebMidi.enabled) {
         newState = MNML_STATE.MIDI_NOT_ENABLED
     }
     else if (WebMidi.outputs.length === 0) {
@@ -24,7 +24,7 @@ function updateMnmlState(mnmlInstance: Mnml): void {
     else {
         newState = MNML_STATE.NO_OUTPUT_SELECTED
     }
-    mnmlState.value = newState
+    mnmlState.value = newState || MNML_STATE.UNKNOWN
 }
 
 const mnmlInstance = ref<Mnml>()

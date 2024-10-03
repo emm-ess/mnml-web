@@ -38,7 +38,7 @@ export class MnmlInterface {
     debouncedResize!: VoidFunction
 
     constructor(canvas: HTMLCanvasElement, mnml: Mnml) {
-        if (!canvas || !canvas.getContext) {
+        if (!canvas?.getContext) {
             throw new Error('Canvas not useable')
         }
         this.mnml = mnml
@@ -180,7 +180,7 @@ export class MnmlInterface {
         const track = this.mnml.voicesPerTrack[trackNumber]
         const renderInfo = this.trackRenderInfos[trackNumber]
         const angle = renderInfo.angle
-        // eslint-disable-next-line unicorn/no-array-reduce
+
         const activeVoices = track.reduce((sum, voice) => {
             if (voice.active) {
                 sum++
@@ -221,7 +221,7 @@ export class MnmlInterface {
     }
 
     public clicked(x: number, y: number, pitchIndex: PitchIndex | null): void {
-        if (pitchIndex !== null && (0 > pitchIndex || pitchIndex >= 5)) {
+        if (pitchIndex !== null && (pitchIndex < 0 || pitchIndex >= 5)) {
             return
         }
         const rect = this.canvas.getBoundingClientRect()

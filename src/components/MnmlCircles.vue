@@ -1,7 +1,11 @@
 <template>
     <div class="main-interface">
         <div class="pitch-select">
-            <button :class="{active: selectedPitchIndex === -1}" class="unselect" @click="selectPitch(-1)" />
+            <button
+                :class="{active: selectedPitchIndex === -1}"
+                class="unselect"
+                @click="selectPitch(-1)"
+            />
             <button
                 v-for="(color, index) of COLORS"
                 :key="color"
@@ -11,13 +15,25 @@
             />
         </div>
 
-        <canvas ref="canvas" @click="handleClick"></canvas>
+        <canvas ref="canvas" @click="handleClick" />
 
         <div class="inner-circle-settings">
-            <mnml-number-input id="voices" :min="VOICES_MIN" :max="VOICES_MAX" v-model="mnml.activeVoices"
-                >Voices</mnml-number-input
+            <mnml-number-input
+                id="voices"
+                v-model="mnml.activeVoices"
+                :min="VOICES_MIN"
+                :max="VOICES_MAX"
             >
-            <mnml-select id="pentatonic" :items="SCALES" v-model="mnml.scale" item-title="name">Pentatonik</mnml-select>
+                Voices
+            </mnml-number-input>
+            <mnml-select
+                id="pentatonic"
+                v-model="mnml.scale"
+                :items="SCALES"
+                item-title="name"
+            >
+                Pentatonik
+            </mnml-select>
         </div>
     </div>
 </template>
@@ -73,7 +89,6 @@ function handleClick(event: MouseEvent): void {
     position: relative
     width: 100vmin
     aspect-ratio: 1
-
 
 .pitch-select
     position: absolute
