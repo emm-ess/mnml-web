@@ -18,7 +18,9 @@
         "lint:style": "stylelint '**/*.{vue,htm,html,sass}' --cache"
     },
     "dependencies": {
+        "events": "^3.3.0",
         "throttle-debounce": "~5.0.2",
+        "typed-emitter": "^2.1.0",
         "vanilla-framework": "~4.16.0",
         "vue": "~3.5.10",
         "webmidi": "~3.1.11"
