@@ -1,28 +1,11 @@
-import {ref} from 'vue'
-import {WebMidi} from 'webmidi'
+import {reactive} from 'vue'
 
 import {Mnml} from './mnml'
-import {MNML_STATE} from './mnml-const'
 
-const mnmlState = ref(MNML_STATE.UNKNOWN)
+await Mnml.enableWebMidi()
+const instance = new Mnml()
+const mnmlReactive = reactive<Mnml>(instance)
 
-let mnmlInstance: Mnml | null = null
-
-export async function createMnml(): Promise<void> {
-    if (!WebMidi.enabled) {
-        await WebMidi.enable()
-    }
-
-    mnmlInstance = new Mnml()
-    mnmlState.value = mnmlInstance.state
-    mnmlInstance.on('stateUpdate', (state) => {
-        mnmlState.value = state
-    })
-}
-
-export function useMnml() {
-    return {
-        mnml: mnmlInstance as Mnml,
-        state: mnmlState,
-    }
+export function useMnml(): Mnml {
+    return mnmlReactive as Mnml
 }

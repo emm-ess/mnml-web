@@ -1,11 +1,9 @@
-export enum MNML_STATE {
+export enum MIDI_STATE {
     MIDI_UNAVAILABLE,
     MIDI_NOT_ENABLED,
     NO_OUTPUT_AVAILABLE,
     NO_OUTPUT_SELECTED,
     READY,
-    PLAYING,
-    PAUSED,
     UNKNOWN,
 }
 

@@ -1,5 +1,5 @@
 <template>
-    <template v-if="state === MNML_STATE.MIDI_UNAVAILABLE">
+    <template v-if="mnml.midiState === MIDI_STATE.MIDI_UNAVAILABLE">
         <mnml-modal-base :closable="false">
             <template #header>
                 Keine Midi Unterstützung
@@ -8,7 +8,7 @@
         </mnml-modal-base>
     </template>
 
-    <template v-else-if="state === MNML_STATE.MIDI_NOT_ENABLED">
+    <template v-else-if="mnml.midiState === MIDI_STATE.MIDI_NOT_ENABLED">
         <mnml-modal-base :closable="false">
             <template #header>
                 Midi Unterstützung nicht erlaubt
@@ -17,7 +17,7 @@
         </mnml-modal-base>
     </template>
 
-    <template v-else-if="state === MNML_STATE.NO_OUTPUT_AVAILABLE">
+    <template v-else-if="mnml.midiState === MIDI_STATE.NO_OUTPUT_AVAILABLE">
         <mnml-modal-base :closable="false">
             <template #header>
                 Keine Midi Geräte
@@ -26,7 +26,7 @@
         </mnml-modal-base>
     </template>
 
-    <template v-else-if="state === MNML_STATE.NO_OUTPUT_SELECTED">
+    <template v-else-if="mnml.midiState === MIDI_STATE.NO_OUTPUT_SELECTED">
         <mnml-modal-base :closable="false">
             <template #header>
                 Kein Midi Gerät ausgewählt
@@ -59,10 +59,10 @@ import {WebMidi} from 'webmidi'
 
 import MnmlSelect from '@/components/forms/MnmlSelect.vue'
 import MnmlModalBase from '@/components/modal/MnmlModalBase.vue'
-import {MNML_STATE, useMnml} from '@/mnml'
+import {MIDI_STATE, useMnml} from '@/mnml'
 
 const selectedOutput = ref<Output | null>(null)
-const {state, mnml} = useMnml()
+const mnml = useMnml()
 
 function setMidiInput() {
     mnml.output = selectedOutput.value as Output

@@ -1,25 +1,24 @@
 <template>
-    <mnml-startup-error v-if="hasStartupError" />
+    <mnml-startup-error v-if="hasMidiError" />
     <mnml-circles v-else />
 </template>
 
 <script setup lang="ts">
 import {computed} from 'vue'
 
+import MnmlCircles from '@/components/MnmlCircles.vue'
 import MnmlStartupError from '@/components/modal/MnmlStartupError.vue'
-import {MNML_STATE, useMnml} from '@/mnml'
+import {MIDI_STATE, useMnml} from '@/mnml'
 
-import MnmlCircles from './components/MnmlCircles.vue'
+const mnml = useMnml()
 
-const {state: mnmlState} = useMnml()
-
-const hasStartupError = computed(() => {
+const hasMidiError = computed(() => {
     return [
-        MNML_STATE.UNKNOWN,
-        MNML_STATE.MIDI_UNAVAILABLE,
-        MNML_STATE.MIDI_NOT_ENABLED,
-        MNML_STATE.NO_OUTPUT_AVAILABLE,
-        MNML_STATE.NO_OUTPUT_SELECTED,
-    ].includes(mnmlState.value)
+        MIDI_STATE.UNKNOWN,
+        MIDI_STATE.MIDI_UNAVAILABLE,
+        MIDI_STATE.MIDI_NOT_ENABLED,
+        MIDI_STATE.NO_OUTPUT_AVAILABLE,
+        MIDI_STATE.NO_OUTPUT_SELECTED,
+    ].includes(mnml.midiState)
 })
 </script>

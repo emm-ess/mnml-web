@@ -1,5 +1,3 @@
-import {EventEmitter} from 'events'
-import type TypedEmitter from 'typed-emitter'
 import type {Output} from 'webmidi'
 import {WebMidi} from 'webmidi'
 
@@ -7,7 +5,7 @@ import {MnmlTicker} from '@/mnml/mnml-ticker'
 import {MnmlVoice} from '@/mnml/mnml-voice'
 
 import type {Pattern, PentatonicScale, PitchIndex} from './mnml-const'
-import {DEFAULT_TRACK_LENGTH, MNML_STATE, SCALES} from './mnml-const'
+import {DEFAULT_TRACK_LENGTH, MIDI_STATE, SCALES} from './mnml-const'
 
 const PITCHES = [60, 36, 48, 60, 72]
 const NUM_VOICES = [1, 3, 3, 3, 3]
@@ -23,14 +21,15 @@ function getLastOutput(): Output | undefined {
     return WebMidi.outputs.find((output) => output.name === outputName)
 }
 
-type MnmlEvents = {
-    stateUpdate: (newState: MNML_STATE) => void
-}
+export class Mnml {
+    static async enableWebMidi(): Promise<void> {
+        if (!WebMidi.enabled) {
+            await WebMidi.enable()
+        }
+    }
 
-export class Mnml extends (EventEmitter as new () => TypedEmitter<MnmlEvents>) {
-    private intervalId = 0
     private _output: Output | null | undefined
-    private _state = MNML_STATE.UNKNOWN
+    private _midiState = MIDI_STATE.UNKNOWN
     scale: PentatonicScale = SCALES[0]
     private _activeVoices = 1
     voicesPerTrack: MnmlVoice[][] = []
@@ -49,7 +48,7 @@ export class Mnml extends (EventEmitter as new () => TypedEmitter<MnmlEvents>) {
             localStorage.setItem('mnml.output', output.name)
         }
         this._output = output
-        this.updateState()
+        this.updateMidiState()
     }
 
     public get tracks(): readonly Pattern[] {
@@ -65,13 +64,11 @@ export class Mnml extends (EventEmitter as new () => TypedEmitter<MnmlEvents>) {
         this.setActiveVoices()
     }
 
-    public get state(): MNML_STATE {
-        return this._state
+    public get midiState(): MIDI_STATE {
+        return this._midiState
     }
 
     constructor() {
-        // eslint-disable-next-line sonarjs/super-invocation
-        super()
         this._output = getLastOutput()
 
         let outputIndex = 1
@@ -91,29 +88,28 @@ export class Mnml extends (EventEmitter as new () => TypedEmitter<MnmlEvents>) {
 
             this.voicesPerTrack.push(voicesOfTrack)
         }
-        this.updateState()
+        this.updateMidiState()
     }
 
-    private updateState(): void {
+    private updateMidiState(): void {
         let newState
         // @ts-ignore
         if (!navigator.requestMIDIAccess) {
-            newState = MNML_STATE.MIDI_UNAVAILABLE
+            newState = MIDI_STATE.MIDI_UNAVAILABLE
         }
         else if (!WebMidi.enabled) {
-            newState = MNML_STATE.MIDI_NOT_ENABLED
+            newState = MIDI_STATE.MIDI_NOT_ENABLED
         }
         else if (WebMidi.outputs.length === 0) {
-            newState = MNML_STATE.NO_OUTPUT_AVAILABLE
+            newState = MIDI_STATE.NO_OUTPUT_AVAILABLE
         }
         else if (this.output) {
-            newState = MNML_STATE.READY
+            newState = MIDI_STATE.READY
         }
         else {
-            newState = MNML_STATE.NO_OUTPUT_SELECTED
+            newState = MIDI_STATE.NO_OUTPUT_SELECTED
         }
-        this._state = newState || MNML_STATE.UNKNOWN
-        this.emit('stateUpdate', newState)
+        this._midiState = newState
     }
 
     private setActiveVoices(): void {
@@ -136,14 +132,12 @@ export class Mnml extends (EventEmitter as new () => TypedEmitter<MnmlEvents>) {
             ticker.start()
         }
         this.setActiveVoices()
-        this.updateState()
     }
 
     stop(): void {
         for (const ticker of this.tickers) {
             ticker.stop()
         }
-        this.updateState()
     }
 
     public toggleNote(track: number, segment: number, pitchIndex: PitchIndex | null): void {

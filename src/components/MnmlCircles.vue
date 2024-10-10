@@ -43,11 +43,9 @@ import {onMounted, onUnmounted, ref} from 'vue'
 
 import MnmlNumberInput from '@/components/forms/MnmlNumberInput.vue'
 import MnmlSelect from '@/components/forms/MnmlSelect.vue'
+import {COLORS, MnmlInterface, type PitchIndex, SCALES, useMnml, VOICES_MAX, VOICES_MIN} from '@/mnml'
 
-import {type PitchIndex, useMnml, VOICES_MAX} from '../mnml'
-import {COLORS, MnmlInterface, SCALES, VOICES_MIN} from '../mnml'
-
-const {mnml} = useMnml()
+const mnml = useMnml()
 
 const canvas = ref<HTMLCanvasElement>()
 const selectedPitchIndex = ref<PitchIndex | -1 | null>(null)

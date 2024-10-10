@@ -3,48 +3,36 @@
         <slot />
     </label>
     <div class="input-line">
-        <button :disabled="modelValue <= min" @click.prevent="() => change(-1)">
+        <button :disabled="model <= min" @click.prevent="model--">
             -
         </button>
         <input
             :id="id"
-            v-model="value"
+            v-model.number="model"
             type="number"
             :name="id"
             :min="min"
             :max="max"
         >
-        <button :disabled="modelValue >= max" @click.prevent="() => change(1)">
+        <button :disabled="model >= max" @click.prevent="model++">
             +
         </button>
     </div>
 </template>
 
 <script lang="ts" setup>
-import {computed} from 'vue'
-
 const props = defineProps<{
     id: string
     min: number
     max: number
-    modelValue: number
 }>()
 
-const emit = defineEmits<(event: 'update:modelValue', value: number) => void>()
-
-const value = computed({
-    get() {
-        return props.modelValue
-    },
+const model = defineModel<number>({
+    required: true,
     set(value) {
-        emit('update:modelValue', value)
+        return Math.min(Math.max(value, props.min), props.max)
     },
 })
-
-function change(amount: number): void {
-    const value = Math.min(Math.max(props.modelValue + amount, props.min), props.max)
-    emit('update:modelValue', value)
-}
 </script>
 
 <style lang="sass">
