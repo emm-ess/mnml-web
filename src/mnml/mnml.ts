@@ -35,7 +35,7 @@ export class Mnml {
     voicesPerTrack: MnmlVoice[][] = []
     private tickers = [new MnmlTicker(120), new MnmlTicker(140), new MnmlTicker(160)] as const
 
-    private _tracks: (PitchIndex | false)[][] = DEFAULT_TRACK_LENGTH.map((length) => {
+    private readonly _tracks: (PitchIndex | false)[][] = DEFAULT_TRACK_LENGTH.map((length) => {
         return Array.from({length}, () => false)
     })
 
@@ -66,6 +66,10 @@ export class Mnml {
 
     public get midiState(): MIDI_STATE {
         return this._midiState
+    }
+
+    private get voices(): MnmlVoice[] {
+        return this.voicesPerTrack.flat()
     }
 
     constructor() {
@@ -121,22 +125,43 @@ export class Mnml {
             }
             else {
                 for (const voice of ticker.tickables) {
-                    voice.stop()
+                    voice.end()
                 }
             }
         }
     }
 
-    start(): void {
+    public start(): void {
         for (const ticker of this.tickers) {
             ticker.start()
         }
         this.setActiveVoices()
     }
 
-    stop(): void {
+    public restart(): void {
+        for (const voice of this.voices) {
+            voice.restart()
+        }
+    }
+
+    public stop(): void {
         for (const ticker of this.tickers) {
             ticker.stop()
+        }
+        for (const voice of this.voices) {
+            voice.stop()
+        }
+    }
+
+    public pause(): void {
+        for (const ticker of this.tickers) {
+            ticker.stop()
+        }
+    }
+
+    public clear(): void {
+        for (const track of this._tracks) {
+            track.fill(false)
         }
     }
 
@@ -146,5 +171,17 @@ export class Mnml {
         this._tracks[track][segment] = currentPitchIndex === pitchIndex || pitchIndex === null
             ? false
             : pitchIndex
+    }
+
+    public randomFill(): void {
+        for (const track of this._tracks) {
+            for (let index = 0; index < track.length; index++) {
+                // eslint-disable-next-line sonarjs/pseudo-random
+                const note = Math.round(Math.random() * 6)
+                track[index] = note < 5
+                    ? (note as PitchIndex)
+                    : false
+            }
+        }
     }
 }

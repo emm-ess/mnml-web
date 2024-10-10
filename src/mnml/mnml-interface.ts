@@ -181,16 +181,16 @@ export class MnmlInterface {
         const renderInfo = this.trackRenderInfos[trackNumber]
         const angle = renderInfo.angle
 
-        const activeVoices = track.reduce((sum, voice) => {
-            if (voice.active) {
+        const activeVoices = track.reduce((sum, voice, index) => {
+            if (voice.active || index === 0) {
                 sum++
             }
             return sum
         }, -1)
         const segmentInfo = renderInfo.segments[activeVoices]
         let activeVoiceIndex = 0
-        for (const voice of track) {
-            if (voice.active) {
+        for (const [index, voice] of track.entries()) {
+            if (voice.active || index === 0) {
                 const segment = segmentInfo[activeVoiceIndex]
                 this.drawVoice(voice, angle, segment)
                 activeVoiceIndex++

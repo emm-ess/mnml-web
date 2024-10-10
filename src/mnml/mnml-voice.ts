@@ -23,7 +23,16 @@ export class MnmlVoice {
     }
 
     public stop() {
+        this.active = false
+        this.index = 0
+    }
+
+    public end() {
         this.shouldStop = true
+    }
+
+    public restart() {
+        this.index = 0
     }
 
     public tick() {
