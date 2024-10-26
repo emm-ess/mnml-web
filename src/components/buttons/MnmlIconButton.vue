@@ -16,12 +16,12 @@ defineProps<{
 @use '../../../node_modules/vanilla-framework/index' as *
 @include vf-base
 @include vf-p-icons
-// @include vf-p-icon-status-waiting
-// @include vf-p-icon-user-group
+
+// sadly all none base icons have to be included separately
 @include vf-p-icon-play
 @include vf-p-icon-stop
 @include vf-p-icon-pause
 @include vf-p-icon-restart
 @include vf-p-icon-change-version
-@include vf-p-icon-delete
+@include vf-p-icon-settings
 </style>

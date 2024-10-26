@@ -1,20 +1,60 @@
+import type {OutputChannel} from 'webmidi'
+
+import {GENERAL_MIDI_CC} from '@/helper/general-midi'
+import type {MnmlTrack} from '@/mnml/mnml-track'
+
 import type {Mnml} from './mnml'
 import type {Pattern} from './mnml-const'
 
 export class MnmlVoice {
+    track: MnmlTrack
     pattern: Pattern
     index: number = 0
-    basePitch: number
+    _volume = 127
+    _pan = 63
     mnml: Mnml
-    outputIndex: number
     active = false
     shouldStop = false
+    channel!: OutputChannel
 
-    constructor(pattern: Pattern, outputIndex: number, basePitch: number, mnml: Mnml) {
-        this.pattern = pattern
-        this.outputIndex = outputIndex
-        this.basePitch = basePitch
+    get channelNumber(): number {
+        return this.channel.number
+    }
+
+    set channelNumber(value: number) {
+        this.channel = this.mnml.output!.channels[value]
+        this.sendChannelSettings()
+    }
+
+    get volume(): number {
+        return this._volume
+    }
+
+    set volume(value: number) {
+        this._volume = value
+        this.channel.sendControlChange(GENERAL_MIDI_CC.ChannelVolume, value)
+    }
+
+    get pan(): number {
+        return this._pan - 63
+    }
+
+    set pan(value: number) {
+        value += 63
+        this._pan = value
+        this.channel.sendControlChange(GENERAL_MIDI_CC.ChannelPan, value)
+    }
+
+    constructor(track: MnmlTrack, channelNumber: number, mnml: Mnml) {
+        this.track = track
+        this.pattern = track.pattern
         this.mnml = mnml
+        this.channelNumber = channelNumber
+    }
+
+    private sendChannelSettings(): void {
+        this.channel.sendControlChange(GENERAL_MIDI_CC.ChannelVolume, this._volume)
+        this.channel.sendControlChange(GENERAL_MIDI_CC.ChannelPan, this._pan)
     }
 
     public start() {
@@ -25,6 +65,7 @@ export class MnmlVoice {
     public stop() {
         this.active = false
         this.index = 0
+        this.channel.sendAllNotesOff()
     }
 
     public end() {
@@ -44,13 +85,12 @@ export class MnmlVoice {
             }
 
             const pitchIndex = this.pattern[this.index]
-            const channel = this.mnml.output!.channels[this.outputIndex]
             if (pitchIndex === false) {
-                channel.sendAllNotesOff()
+                this.channel.sendAllNotesOff()
             }
             else {
-                const pitch = this.basePitch + this.mnml.scale.pitches[pitchIndex]
-                channel.playNote(pitch)
+                const pitch = this.track.basePitch + this.mnml.scale.pitches[pitchIndex]
+                this.channel.playNote(pitch)
             }
         }
     }

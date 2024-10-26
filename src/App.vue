@@ -1,12 +1,16 @@
 <template>
     <mnml-startup-error v-if="hasMidiError" />
-    <mnml-circles v-else />
+    <template v-else>
+        <mnml-circles />
+        <mnml-settings />
+    </template>
 </template>
 
 <script setup lang="ts">
 import {computed} from 'vue'
 
 import MnmlCircles from '@/components/MnmlCircles.vue'
+import MnmlSettings from '@/components/MnmlSettings.vue'
 import MnmlStartupError from '@/components/modal/MnmlStartupError.vue'
 import {MIDI_STATE, useMnml} from '@/mnml'
 

@@ -33,14 +33,7 @@
             </template>
 
             <form @submit.prevent="setMidiInput">
-                <mnml-select
-                    id="output"
-                    v-model="selectedOutput"
-                    :items="WebMidi.outputs"
-                    item-title="name"
-                >
-                    Gerät
-                </mnml-select>
+                <mnml-midi-device-select v-model="selectedOutput" />
 
                 <footer class="p-modal__footer">
                     <button class="p-button--positive u-no-margin--bottom" :disabled="!selectedOutput">
@@ -55,14 +48,14 @@
 <script lang="ts" setup>
 import {ref} from 'vue'
 import type {Output} from 'webmidi'
-import {WebMidi} from 'webmidi'
 
-import MnmlSelect from '@/components/forms/MnmlSelect.vue'
+import MnmlMidiDeviceSelect from '@/components/forms/MnmlMidiDeviceSelect.vue'
 import MnmlModalBase from '@/components/modal/MnmlModalBase.vue'
 import {MIDI_STATE, useMnml} from '@/mnml'
 
-const selectedOutput = ref<Output | null>(null)
 const mnml = useMnml()
+// Fixme: "any" shouldn't be needed here, but somehow Output !== Output
+const selectedOutput = ref<any>(null)
 
 function setMidiInput() {
     mnml.output = selectedOutput.value as Output

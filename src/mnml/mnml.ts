@@ -1,13 +1,13 @@
 import type {Output} from 'webmidi'
 import {WebMidi} from 'webmidi'
 
-import {MnmlTicker} from '@/mnml/mnml-ticker'
-import {MnmlVoice} from '@/mnml/mnml-voice'
-
 import type {Pattern, PentatonicScale, PitchIndex} from './mnml-const'
 import {DEFAULT_TRACK_LENGTH, MIDI_STATE, SCALES} from './mnml-const'
+import {MnmlTicker} from './mnml-ticker'
+import {MnmlTrack} from './mnml-track'
+import {MnmlVoice} from './mnml-voice'
 
-const PITCHES = [60, 36, 48, 60, 72]
+const OCTAVES = [5, 3, 4, 5, 6]
 const NUM_VOICES = [1, 3, 3, 3, 3]
 
 function getLastOutput(): Output | undefined {
@@ -32,11 +32,10 @@ export class Mnml {
     private _midiState = MIDI_STATE.UNKNOWN
     scale: PentatonicScale = SCALES[0]
     private _activeVoices = 1
-    voicesPerTrack: MnmlVoice[][] = []
     private tickers = [new MnmlTicker(120), new MnmlTicker(140), new MnmlTicker(160)] as const
 
-    private readonly _tracks: (PitchIndex | false)[][] = DEFAULT_TRACK_LENGTH.map((length) => {
-        return Array.from({length}, () => false)
+    public readonly tracks: MnmlTrack[] = DEFAULT_TRACK_LENGTH.map((length, index) => {
+        return new MnmlTrack(length, OCTAVES[index], 1)
     })
 
     public get output(): Output | null | undefined {
@@ -44,6 +43,9 @@ export class Mnml {
     }
 
     public set output(output: Output | null | undefined) {
+        if (this._output && this._output !== output) {
+            this._output.sendAllNotesOff().clear()
+        }
         if (output) {
             localStorage.setItem('mnml.output', output.name)
         }
@@ -51,8 +53,8 @@ export class Mnml {
         this.updateMidiState()
     }
 
-    public get tracks(): readonly Pattern[] {
-        return this._tracks
+    public get patterns(): readonly Pattern[] {
+        return this.tracks.map((track) => track.pattern)
     }
 
     public get activeVoices() {
@@ -68,8 +70,8 @@ export class Mnml {
         return this._midiState
     }
 
-    private get voices(): MnmlVoice[] {
-        return this.voicesPerTrack.flat()
+    public get voices(): MnmlVoice[] {
+        return this.tracks.flatMap((track) => track.voices)
     }
 
     constructor() {
@@ -77,11 +79,11 @@ export class Mnml {
 
         let outputIndex = 1
         for (const [trackIndex, numberVoicesForTrack] of NUM_VOICES.entries()) {
-            const voicesOfTrack = []
+            const track = this.tracks[trackIndex]
 
             for (let index = 0; index < numberVoicesForTrack; index++) {
-                const voice = new MnmlVoice(this._tracks[trackIndex], outputIndex, PITCHES[trackIndex], this)
-                voicesOfTrack.push(voice)
+                const voice = new MnmlVoice(track, outputIndex, this)
+                track.registerVoice(voice)
                 this.tickers[index].addTickable(voice)
                 outputIndex++
                 // channel 10 is used for percussion
@@ -89,8 +91,6 @@ export class Mnml {
                     outputIndex++
                 }
             }
-
-            this.voicesPerTrack.push(voicesOfTrack)
         }
         this.updateMidiState()
     }
@@ -160,25 +160,24 @@ export class Mnml {
     }
 
     public clear(): void {
-        for (const track of this._tracks) {
+        for (const track of this.patterns) {
             track.fill(false)
         }
     }
 
     public toggleNote(track: number, segment: number, pitchIndex: PitchIndex | null): void {
-        const currentPitchIndex = this._tracks[track][segment]
-        // eslint-disable-next-line sonarjs/different-types-comparison
-        this._tracks[track][segment] = currentPitchIndex === pitchIndex || pitchIndex === null
+        const currentPitchIndex = this.patterns[track][segment]
+        this.patterns[track][segment] = currentPitchIndex === pitchIndex || pitchIndex === null
             ? false
             : pitchIndex
     }
 
     public randomFill(): void {
-        for (const track of this._tracks) {
-            for (let index = 0; index < track.length; index++) {
+        for (const pattern of this.patterns) {
+            for (let index = 0; index < pattern.length; index++) {
                 // eslint-disable-next-line sonarjs/pseudo-random
                 const note = Math.round(Math.random() * 6)
-                track[index] = note < 5
+                pattern[index] = note < 5
                     ? (note as PitchIndex)
                     : false
             }

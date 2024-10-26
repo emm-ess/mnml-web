@@ -51,14 +51,14 @@
         <canvas ref="canvas" @click="handleClick" />
 
         <div class="inner-circle-settings">
-            <mnml-number-input
+            <mnml-number-input-big
                 id="voices"
                 v-model="mnml.activeVoices"
                 :min="VOICES_MIN"
                 :max="VOICES_MAX"
             >
                 Voices
-            </mnml-number-input>
+            </mnml-number-input-big>
             <mnml-select
                 id="pentatonic"
                 v-model="mnml.scale"
@@ -76,7 +76,7 @@ import {onMounted, onUnmounted, ref} from 'vue'
 
 import MnmlIconButton from '@/components/buttons/MnmlIconButton.vue'
 import MnmlRoundButton from '@/components/buttons/MnmlRoundButton.vue'
-import MnmlNumberInput from '@/components/forms/MnmlNumberInput.vue'
+import MnmlNumberInputBig from '@/components/forms/MnmlNumberInputBig.vue'
 import MnmlSelect from '@/components/forms/MnmlSelect.vue'
 import {COLORS, MnmlInterface, type PitchIndex, SCALES, useMnml, VOICES_MAX, VOICES_MIN} from '@/mnml'
 

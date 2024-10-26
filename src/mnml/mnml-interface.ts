@@ -90,10 +90,10 @@ export class MnmlInterface {
         this.center = {x, y}
         const maxRadius = (this.maxRadius = Math.min(x, y))
         const minRadius = maxRadius * MIN_RADIUS_RELATIVE
-        const tracks = this.mnml.tracks
+        const patterns = this.mnml.patterns
         const innerCircleOuterRadius
-            = minRadius + ((maxRadius - minRadius) / tracks.length) * INNER_CIRCLE_RELATIVE_RADIUS
-        const baseTrackWidth = (maxRadius - innerCircleOuterRadius) / (tracks.length - 1)
+            = minRadius + ((maxRadius - minRadius) / patterns.length) * INNER_CIRCLE_RELATIVE_RADIUS
+        const baseTrackWidth = (maxRadius - innerCircleOuterRadius) / (patterns.length - 1)
         const voiceArray = Array.from({length: VOICES_MAX - VOICES_MIN + 1}, (_, index) => {
             return index + 1
         })
@@ -104,14 +104,14 @@ export class MnmlInterface {
 
         this.trackRenderInfos = [
             MnmlInterface.getInnerTrackRenderInfo(
-                tracks[0].length,
+                patterns[0].length,
                 minRadius,
                 innerCircleOuterRadius - SPACE_BETWEEN_TRACKS_HALF,
             ),
         ]
 
-        for (let trackIndex = 1; trackIndex < tracks.length; trackIndex++) {
-            const angle = (2 * Math.PI) / tracks[trackIndex].length
+        for (let trackIndex = 1; trackIndex < patterns.length; trackIndex++) {
+            const angle = (2 * Math.PI) / patterns[trackIndex].length
             const trackBaseRadius
                 = innerCircleOuterRadius + baseTrackWidth * (trackIndex - 1) + SPACE_BETWEEN_TRACKS_HALF
             const segments = voiceArray.map((voice) => {
@@ -166,8 +166,7 @@ export class MnmlInterface {
         // this.context.resetTransform()
         this.context.translate(this.center.x, this.center.y)
         this.context.rotate(-Math.PI / 2)
-        const trackCount = this.mnml.tracks.length
-        for (let index = 0; index < trackCount; index++) {
+        for (let index = 0; index < this.mnml.tracks.length; index++) {
             this.drawTrack(index)
         }
         this.context.restore()
@@ -177,11 +176,11 @@ export class MnmlInterface {
     }
 
     private drawTrack(trackNumber: number): void {
-        const track = this.mnml.voicesPerTrack[trackNumber]
+        const voices = this.mnml.tracks[trackNumber].voices
         const renderInfo = this.trackRenderInfos[trackNumber]
         const angle = renderInfo.angle
 
-        const activeVoices = track.reduce((sum, voice, index) => {
+        const activeVoices = voices.reduce((sum, voice, index) => {
             if (voice.active || index === 0) {
                 sum++
             }
@@ -189,7 +188,7 @@ export class MnmlInterface {
         }, -1)
         const segmentInfo = renderInfo.segments[activeVoices]
         let activeVoiceIndex = 0
-        for (const [index, voice] of track.entries()) {
+        for (const [index, voice] of voices.entries()) {
             if (voice.active || index === 0) {
                 const segment = segmentInfo[activeVoiceIndex]
                 this.drawVoice(voice, angle, segment)

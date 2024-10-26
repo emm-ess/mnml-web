@@ -1,23 +1,20 @@
 <template>
-    <label :for="id">
+    <label
+        :for="id"
+        :class="{
+            'u-off-screen': labelInvisible,
+        }"
+    >
         <slot />
     </label>
-    <div class="input-line">
-        <button :disabled="model <= min" @click.prevent="model--">
-            -
-        </button>
-        <input
-            :id="id"
-            v-model.number="model"
-            type="number"
-            :name="id"
-            :min="min"
-            :max="max"
-        >
-        <button :disabled="model >= max" @click.prevent="model++">
-            +
-        </button>
-    </div>
+    <input
+        :id="id"
+        v-model.number="model"
+        type="number"
+        :name="id"
+        :min="min"
+        :max="max"
+    >
 </template>
 
 <script lang="ts" setup>
@@ -25,6 +22,7 @@ const props = defineProps<{
     id: string
     min: number
     max: number
+    labelInvisible?: boolean
 }>()
 
 const model = defineModel<number>({
@@ -39,17 +37,6 @@ const model = defineModel<number>({
 @use 'vanilla-framework' as *
 @include vf-base
 @include vf-b-forms
-</style>
 
-<style lang="sass" scoped>
-.input-line
-    display: flex
-
-button,
-input
-    margin: 0
-
-input
-    flex: 1 1 auto
-    min-width: unset
+@include vf-u-off-screen
 </style>

@@ -29,6 +29,19 @@ module.exports = {
         '@stylistic/string-quotes': 'single',
         '@stylistic/max-empty-lines': 3,
 
+        'selector-pseudo-class-no-unknown': [
+            true,
+            {
+                ignorePseudoClasses: ['deep', 'slotted', 'global'],
+            },
+        ],
+        'function-no-unknown': [
+            true,
+            {
+                ignoreFunctions: ['v-bind'],
+            },
+        ],
+
         'at-rule-no-vendor-prefix': true,
         'media-feature-name-no-vendor-prefix': true,
         'property-no-vendor-prefix': true,
@@ -50,6 +63,8 @@ module.exports = {
         // ],
         'plugin/no-low-performance-animation-properties': true,
         'plugin/declaration-block-no-ignored-properties': true,
+
+        'number-max-precision': 5,
     },
 
     overrides: [
