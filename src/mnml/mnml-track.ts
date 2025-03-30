@@ -32,6 +32,10 @@ export class MnmlTrack {
         return this._basePitch
     }
 
+    get active(): boolean {
+        return this.pattern.some((step) => step !== false)
+    }
+
     constructor(patternLength: number, octave: number, midiProgram: number) {
         this.pattern = Array.from({length: patternLength}, () => false)
         this.octave = octave

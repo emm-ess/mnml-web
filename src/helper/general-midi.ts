@@ -209,7 +209,6 @@ export const GM_PROGRAMS = [
     },
 ] as const satisfies Array<{
     label: string
-    // eslint-disable-next-line @stylistic/block-spacing
     items: Array<{program: number; name: string}>
 }>
 

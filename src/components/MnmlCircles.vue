@@ -17,19 +17,9 @@
 
         <div class="controls">
             <mnml-icon-button
-                class="play"
-                icon="play"
-                @click="mnml.start()"
-            />
-            <mnml-icon-button
                 class="stop"
                 icon="stop"
                 @click="mnml.stop()"
-            />
-            <mnml-icon-button
-                class="pause"
-                icon="pause"
-                @click="mnml.pause()"
             />
             <mnml-icon-button
                 class="restart"
@@ -48,9 +38,7 @@
             />
         </div>
 
-        <canvas ref="canvas" @click="handleClick" />
-
-        <div class="inner-circle-settings">
+        <div class="quick-settings">
             <mnml-number-input-big
                 id="voices"
                 v-model="mnml.activeVoices"
@@ -59,14 +47,16 @@
             >
                 Voices
             </mnml-number-input-big>
-            <mnml-select
-                id="pentatonic"
-                v-model="mnml.scale"
-                :items="SCALES"
-                item-title="name"
-            >
-                Pentatonik
-            </mnml-select>
+        </div>
+
+        <canvas ref="canvas" @click="handleClick" />
+
+        <div class="inner-circle-settings">
+            <mnml-icon-button
+                class="play-pause"
+                :icon="mnml.state !== MNML_STATE.PLAYING ? 'play' : 'pause'"
+                @click="togglePlayPause"
+            />
         </div>
     </div>
 </template>
@@ -77,8 +67,7 @@ import {onMounted, onUnmounted, ref} from 'vue'
 import MnmlIconButton from '@/components/buttons/MnmlIconButton.vue'
 import MnmlRoundButton from '@/components/buttons/MnmlRoundButton.vue'
 import MnmlNumberInputBig from '@/components/forms/MnmlNumberInputBig.vue'
-import MnmlSelect from '@/components/forms/MnmlSelect.vue'
-import {COLORS, MnmlInterface, type PitchIndex, SCALES, useMnml, VOICES_MAX, VOICES_MIN} from '@/mnml'
+import {COLORS, MNML_STATE, MnmlInterface, type PitchIndex, useMnml, VOICES_MAX, VOICES_MIN} from '@/mnml'
 
 const mnml = useMnml()
 
@@ -114,6 +103,15 @@ function handleClick(event: MouseEvent): void {
         renderer?.clicked(event.offsetX, event.offsetY, pitchIndex)
     }
 }
+
+function togglePlayPause(): void {
+    if (mnml.state !== MNML_STATE.PLAYING) {
+        mnml.start()
+    }
+    else {
+        mnml.pause()
+    }
+}
 </script>
 
 <style lang="sass" scoped>
@@ -143,23 +141,39 @@ function handleClick(event: MouseEvent): void {
         grid-column: 1
 
 .controls
-    top: 0
-    right: 0
+    bottom: 0
+    left: 0
+    grid: repeat(3, 1fr) / repeat(3, 1fr)
     @extend %corner-grid
 
     button
-        &:nth-child(4)
-            grid-column: 2
+        &:nth-child(1),
+        &:nth-child(2)
+            grid-row: 2
 
-        &:nth-child(6)
-            grid-column: 3
+        &:nth-child(3),
+        &:nth-child(4)
+            grid-row: 3
+
+.quick-settings
+    position: absolute
+    right: 0
+    bottom: 0
+    width: 22%
 
 .inner-circle-settings
     position: absolute
     top: 40%
     left: 40%
+    display: flex
+    place-items: center
+    place-content: center
     width: 20%
     height: 20%
     overflow: hidden
     border-radius: 50%
+
+.play-pause
+    width: 50%
+    height: 50%
 </style>

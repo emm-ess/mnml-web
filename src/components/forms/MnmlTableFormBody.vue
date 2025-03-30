@@ -50,7 +50,7 @@ export type FormRow<T extends Component = Component> = {
     rowClass?: string
     component: T
     // record is a built-in...
-    // eslint-disable-next-line no-undef
+
     componentProps?: Record<string, unknown>
     models: unknown[]
     spans?: number[]

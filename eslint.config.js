@@ -44,6 +44,7 @@ export default [
             'sonarjs/fixme-tag': 0,
             // should be handled by typescript
             'sonarjs/different-types-comparison': 0,
+            '@stylistic/block-spacing': 0,
         },
     },
 ]

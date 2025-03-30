@@ -1,7 +1,10 @@
+import lcm from 'compute-lcm'
 import type {Output} from 'webmidi'
 import {WebMidi} from 'webmidi'
 
-import type {Pattern, PentatonicScale, PitchIndex} from './mnml-const'
+import {generalizedCrt} from '@/helper/crt'
+
+import {MNML_STATE, type Pattern, type PentatonicScale, type PitchIndex, type TemporalInformation} from './mnml-const'
 import {DEFAULT_TRACK_LENGTH, MIDI_STATE, SCALES} from './mnml-const'
 import {MnmlTicker} from './mnml-ticker'
 import {MnmlTrack} from './mnml-track'
@@ -30,9 +33,10 @@ export class Mnml {
 
     private _output: Output | null | undefined
     private _midiState = MIDI_STATE.UNKNOWN
+    state = MNML_STATE.STOPPED
     scale: PentatonicScale = SCALES[0]
     private _activeVoices = 1
-    private tickers = [new MnmlTicker(120), new MnmlTicker(140), new MnmlTicker(160)] as const
+    readonly tickers = [new MnmlTicker(120), new MnmlTicker(140), new MnmlTicker(160)] as const
 
     public readonly tracks: MnmlTrack[] = DEFAULT_TRACK_LENGTH.map((length, index) => {
         return new MnmlTrack(length, OCTAVES[index], 1)
@@ -66,12 +70,57 @@ export class Mnml {
         this.setActiveVoices()
     }
 
+    public get activeTicker(): MnmlTicker[] {
+        return this.tickers.filter((ticker) => ticker.length > 0)
+    }
+
     public get midiState(): MIDI_STATE {
         return this._midiState
     }
 
     public get voices(): MnmlVoice[] {
         return this.tracks.flatMap((track) => track.voices)
+    }
+
+    /** that's not really working and shouldn't be used */
+    public get temporalInformation(): TemporalInformation {
+        const activeTicker = this.activeTicker
+        switch (activeTicker.length) {
+            case 0:
+                return {
+                    time: 0,
+                    duration: 0,
+                }
+            case 1:
+                return activeTicker[0]
+            default: {
+                const {times, durations} = activeTicker.reduce<{
+                    times: number[]
+                    durations: number[]
+                }>(
+                    (summed, ticker) => {
+                        summed.times.push(ticker.time)
+                        summed.durations.push(ticker.duration)
+                        return summed
+                    },
+                    {
+                        times: [],
+                        durations: [],
+                    },
+                )
+                const time = generalizedCrt(times, durations) as number
+                return {
+                    time,
+                    duration: lcm(durations) as number,
+                }
+            }
+        }
+    }
+
+    /** it's based on `temporalInformation` which isn't working, so neither is this */
+    public get progress(): number {
+        const temporalInformation = this.temporalInformation
+        return temporalInformation.time / temporalInformation.duration
     }
 
     constructor() {
@@ -136,6 +185,7 @@ export class Mnml {
             ticker.start()
         }
         this.setActiveVoices()
+        this.state = MNML_STATE.PLAYING
     }
 
     public restart(): void {
@@ -151,12 +201,14 @@ export class Mnml {
         for (const voice of this.voices) {
             voice.stop()
         }
+        this.state = MNML_STATE.STOPPED
     }
 
     public pause(): void {
         for (const ticker of this.tickers) {
             ticker.stop()
         }
+        this.state = MNML_STATE.PAUSED
     }
 
     public clear(): void {

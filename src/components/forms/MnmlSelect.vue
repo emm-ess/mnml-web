@@ -68,7 +68,6 @@ const model = defineModel<ValueType | null>()
 withDefaults(
     defineProps<{
         id: string
-        // eslint-disable-next-line @stylistic/block-spacing
         items: Grouped extends true ? {label: string; items: ValueType[]}[] : ValueType[]
         itemTitle?: keyof ValueType
         itemValue?: keyof ValueType

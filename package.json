@@ -18,7 +18,7 @@
         "lint:style": "stylelint '**/*.{vue,htm,html,sass}' --cache"
     },
     "dependencies": {
-        "events": "^3.3.0",
+        "compute-lcm": "~1.1.2",
         "throttle-debounce": "~5.0.2",
         "vanilla-framework": "~4.18.0",
         "vue": "~3.5.12",
@@ -27,13 +27,14 @@
     "devDependencies": {
         "@commitlint/cli": "~19.5.0",
         "@commitlint/config-conventional": "~19.5.0",
-        "@emm-ess-configs/eslint-config-vue": "~0.2.0",
+        "@emm-ess-configs/eslint-config-vue": "~0.2.1",
         "@eslint/compat": "~1.2.1",
         "@eslint/js": "~9.13.0",
         "@semantic-release/changelog": "~6.0.3",
         "@semantic-release/git": "~10.0.1",
         "@tsconfig/node20": "^20.1.4",
         "@tsconfig/strictest": "^2.0.5",
+        "@types/compute-lcm": "^1.1.3",
         "@types/jsdom": "~21.1.7",
         "@types/node": "~20.14.8",
         "@types/throttle-debounce": "~5.0.2",
@@ -41,7 +42,7 @@
         "@vue/test-utils": "~2.4.6",
         "@vue/tsconfig": "~0.5.1",
         "browserslist-to-esbuild": "^2.1.1",
-        "eslint": "~9.13.0",
+        "eslint": "~9.19.0",
         "husky": "~9.1.6",
         "imagemin-lint-staged": "~0.5.1",
         "jsdom": "~25.0.1",
@@ -67,7 +68,7 @@
         "vue-tsc": "~2.1.6"
     },
     "overrides": {
-        "eslint": "~9.13.0",
+        "eslint": "~9.19.0",
         "stylelint-config-outside-in-order": {
             "stylelint": "~16.10.0"
         }

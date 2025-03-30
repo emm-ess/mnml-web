@@ -20,6 +20,15 @@
                 <mnml-switch id="general-midi" v-model="generalMidiDevice">
                     General Midi Gerät
                 </mnml-switch>
+
+                <mnml-select
+                    id="pentatonic"
+                    v-model="mnml.scale"
+                    :items="SCALES"
+                    item-title="name"
+                >
+                    Pentatonik
+                </mnml-select>
             </fieldset>
 
             <fieldset>
@@ -128,7 +137,7 @@ import MnmlSwitch from '@/components/forms/MnmlSwitch.vue'
 import MnmlTableFormBody, {type FormRow} from '@/components/forms/MnmlTableFormBody.vue'
 import {GM_PROGRAMS} from '@/helper/general-midi'
 import {objectPropModelArray} from '@/helper/vue'
-import {useMnml} from '@/mnml'
+import {SCALES, useMnml} from '@/mnml'
 
 const mnml = useMnml()
 const generalMidiDevice = ref(true)
