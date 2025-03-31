@@ -13,7 +13,7 @@ defineProps<{
 </script>
 
 <style lang="sass">
-@use '../../../node_modules/vanilla-framework/index' as *
+@use 'vanilla-framework' as *
 @include vf-base
 @include vf-p-icons
 

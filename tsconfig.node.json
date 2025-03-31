@@ -1,5 +1,5 @@
 {
-    "extends": ["@tsconfig/node20/tsconfig.json", "@tsconfig/strictest"],
+    "extends": ["@tsconfig/node22/tsconfig.json", "@tsconfig/strictest"],
     "include": ["vite.config.*", "vitest.config.*"],
     "compilerOptions": {
         "composite": true,

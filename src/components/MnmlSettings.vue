@@ -244,10 +244,10 @@ const form = computed<FormRow[]>(() => {
     height: 100vh
 
 .col-single
-    width: math.percentage(7 / 48)
+    width: math.percentage(math.div(7, 48))
 
 .col-divided
-    width: math.percentage(8.5 / 48)
+    width: math.percentage(math.div(8.5, 48))
 
 :deep(.volume input.vertical)
     height: 60px
