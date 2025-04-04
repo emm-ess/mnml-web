@@ -4,7 +4,15 @@ import {WebMidi} from 'webmidi'
 
 import {generalizedCrt} from '@/helper/crt'
 
-import {MNML_STATE, type Pattern, type PentatonicScale, type PitchIndex, type TemporalInformation} from './mnml-const'
+import {
+    type Key,
+    KEYS,
+    MNML_STATE,
+    type Pattern,
+    type PentatonicScale,
+    type PitchIndex,
+    type TemporalInformation,
+} from './mnml-const'
 import {DEFAULT_TRACK_LENGTH, MIDI_STATE, SCALES} from './mnml-const'
 import {MnmlTicker} from './mnml-ticker'
 import {MnmlTrack} from './mnml-track'
@@ -31,6 +39,7 @@ export class Mnml {
         }
     }
 
+    private _key: Key = KEYS[0]
     private _output: Output | null | undefined
     private _midiState = MIDI_STATE.UNKNOWN
     state = MNML_STATE.STOPPED
@@ -39,7 +48,7 @@ export class Mnml {
     readonly tickers = [new MnmlTicker(120), new MnmlTicker(144), new MnmlTicker(144 * 1.2)]
 
     public readonly tracks: MnmlTrack[] = DEFAULT_TRACK_LENGTH.map((length, index) => {
-        return new MnmlTrack(length, OCTAVES[index], 1)
+        return new MnmlTrack(this, {length, octave: OCTAVES[index], midiProgram: 1})
     })
 
     public get output(): Output | null | undefined {
@@ -80,6 +89,17 @@ export class Mnml {
 
     public get voices(): MnmlVoice[] {
         return this.tracks.flatMap((track) => track.voices)
+    }
+
+    public get key(): Key {
+        return this._key
+    }
+
+    public set key(key: Key) {
+        this._key = key
+        for (const track of this.tracks) {
+            track.update()
+        }
     }
 
     /** that's not really working and shouldn't be used */

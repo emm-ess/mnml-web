@@ -42,6 +42,26 @@ export const SCALES: PentatonicScale[] = [
     {name: 'MINOR', pitches: [0, 3, 5, 7, 10]},
 ]
 
+export type Key = Readonly<{
+    name: string
+    pitch: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+}>
+
+export const KEYS: Key[] = [
+    {name: 'C', pitch: 0},
+    {name: 'C#/Db', pitch: 1},
+    {name: 'D', pitch: 2},
+    {name: 'D#/Eb', pitch: 3},
+    {name: 'E', pitch: 4},
+    {name: 'F', pitch: 5},
+    {name: 'F#/Gb', pitch: 6},
+    {name: 'G', pitch: 7},
+    {name: 'G#/Ab', pitch: 8},
+    {name: 'A', pitch: 9},
+    {name: 'A#/Bb', pitch: 10},
+    {name: 'B', pitch: 11},
+]
+
 function hexToRgb(hex: `#${string}`): string {
     const result = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex)!
     return [Number.parseInt(result[1], 16), Number.parseInt(result[2], 16), Number.parseInt(result[3], 16)].join(',')

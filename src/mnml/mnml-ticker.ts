@@ -136,5 +136,3 @@ export class MnmlTicker {
         }
     }
 }
-
-console.log('TICKER', MnmlTicker)

@@ -29,6 +29,15 @@
                 >
                     Pentatonik
                 </mnml-select>
+
+                <mnml-select
+                    id="pentatonic"
+                    v-model="mnml.key"
+                    :items="KEYS"
+                    item-title="name"
+                >
+                    Key
+                </mnml-select>
             </fieldset>
 
             <mnml-settings-tempo />
@@ -139,7 +148,7 @@ import MnmlSwitch from '@/components/inputs/MnmlSwitch.vue'
 import MnmlTableFormBody, {type FormRow} from '@/components/inputs/MnmlTableFormBody.vue'
 import {GM_PROGRAMS} from '@/helper/general-midi.ts'
 import {objectPropModelArray} from '@/helper/vue.ts'
-import {SCALES, useMnml} from '@/mnml'
+import {KEYS, SCALES, useMnml} from '@/mnml'
 
 import MnmlSettingsTempo from './MnmlSettingsTempo.vue'
 

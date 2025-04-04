@@ -1,7 +1,15 @@
+import type {Mnml} from '@/mnml/mnml.ts'
 import type {PitchIndex} from '@/mnml/mnml-const'
 import type {MnmlVoice} from '@/mnml/mnml-voice'
 
+type MnmlTrackOptions = {
+    length: number
+    octave: number
+    midiProgram: number
+}
+
 export class MnmlTrack {
+    private readonly mnml: Mnml
     pattern: (PitchIndex | false)[]
     voices: MnmlVoice[] = []
     _basePitch!: number
@@ -25,7 +33,7 @@ export class MnmlTrack {
 
     set octave(value: number) {
         this._octave = value
-        this._basePitch = value * 12
+        this.update()
     }
 
     get basePitch() {
@@ -36,10 +44,16 @@ export class MnmlTrack {
         return this.pattern.some((step) => step !== false)
     }
 
-    constructor(patternLength: number, octave: number, midiProgram: number) {
-        this.pattern = Array.from({length: patternLength}, () => false)
-        this.octave = octave
-        this.midiProgram = midiProgram
+    constructor(mnml: Mnml, options: MnmlTrackOptions) {
+        this.mnml = mnml
+        this.pattern = Array.from({length: options.length}, () => false)
+        this.octave = options.octave
+        this.midiProgram = options.midiProgram
+    }
+
+    // ToDo: introduce reactivity?
+    public update(): void {
+        this._basePitch = this._octave * 12 + this.mnml.key.pitch
     }
 
     public registerVoice(voice: MnmlVoice): void {
