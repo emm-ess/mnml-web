@@ -42,6 +42,7 @@
 
 <script lang="ts" setup>
 import type {Component} from 'vue'
+import type {ComponentProps} from 'vue-component-type-helpers'
 
 // ToDo: use generic to add typeinformation for props & model
 export type FormRow<T extends Component = Component> = {
@@ -49,9 +50,7 @@ export type FormRow<T extends Component = Component> = {
     id: string
     rowClass?: string
     component: T
-    // record is a built-in...
-
-    componentProps?: Record<string, unknown>
+    componentProps?: ComponentProps<T>
     models: unknown[]
     spans?: number[]
 }

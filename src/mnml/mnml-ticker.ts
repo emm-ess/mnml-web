@@ -4,13 +4,28 @@ import {generalizedCrt} from '@/helper/crt'
 import type {MnmlVoice} from '@/mnml/mnml-voice'
 
 export class MnmlTicker {
+    // eslint-disable-next-line sonarjs/public-static-readonly
+    static relativeBpmSetting = true
+
     private intervalId = 0
     private _length = 0
     private _position = 0
 
     /** in bpm */
-    bpm: number
+    private _bpm = 0
+    private _nextBpm = 0
     tickables: MnmlVoice[]
+
+    get bpm(): number {
+        return this._bpm
+    }
+
+    set bpm(bpm: number) {
+        if (bpm === this._bpm) {
+            return
+        }
+        this._nextBpm = bpm
+    }
 
     get length(): number {
         return this._length
@@ -25,15 +40,15 @@ export class MnmlTicker {
     }
 
     get time(): number {
-        return Math.round((this._position / this.bpm) * 60)
+        return Math.round((this._position / this._bpm) * 60)
     }
 
     get duration(): number {
-        return Math.round((this._length / this.bpm) * 60)
+        return Math.round((this._length / this._bpm) * 60)
     }
 
     constructor(bpm: number, tickables: MnmlVoice[] = []) {
-        this.bpm = bpm
+        this._nextBpm = bpm
         this.tickables = tickables
     }
 
@@ -48,8 +63,7 @@ export class MnmlTicker {
         if (this.intervalId) {
             return
         }
-        const ms = 60_000 / this.bpm
-        this.intervalId = window.setInterval(this.tick.bind(this), ms)
+        this.restart()
     }
 
     stop(): void {
@@ -59,11 +73,24 @@ export class MnmlTicker {
         }
     }
 
+    restart(): void {
+        if (this.intervalId) {
+            window.clearInterval(this.intervalId)
+        }
+        this._bpm = this._nextBpm
+        const ms = 60_000 / this._bpm
+        this.intervalId = window.setInterval(this.tick.bind(this), ms)
+        this._nextBpm = 0
+    }
+
     private tick(): void {
         for (const tickable of this.tickables) {
             tickable.tick()
         }
         this.updateMetrics()
+        if (this._nextBpm) {
+            this.restart()
+        }
     }
 
     private updateMetrics(): void {
@@ -109,3 +136,5 @@ export class MnmlTicker {
         }
     }
 }
+
+console.log('TICKER', MnmlTicker)

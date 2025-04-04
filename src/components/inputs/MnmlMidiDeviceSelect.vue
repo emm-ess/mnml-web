@@ -12,7 +12,7 @@
 import {computed} from 'vue'
 import {type Output, WebMidi} from 'webmidi'
 
-import MnmlSelect from '@/components/forms/MnmlSelect.vue'
+import MnmlSelect from '@/components/inputs/MnmlSelect.vue'
 
 const model = defineModel<Output | null>()
 

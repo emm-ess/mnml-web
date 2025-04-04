@@ -66,7 +66,7 @@ import {onMounted, onUnmounted, ref} from 'vue'
 
 import MnmlIconButton from '@/components/buttons/MnmlIconButton.vue'
 import MnmlRoundButton from '@/components/buttons/MnmlRoundButton.vue'
-import MnmlNumberInputBig from '@/components/forms/MnmlNumberInputBig.vue'
+import MnmlNumberInputBig from '@/components/inputs/MnmlNumberInputBig.vue'
 import {COLORS, MNML_STATE, MnmlInterface, type PitchIndex, useMnml, VOICES_MAX, VOICES_MIN} from '@/mnml'
 
 const mnml = useMnml()

@@ -10,8 +10,8 @@
 import {computed} from 'vue'
 
 import MnmlCircles from '@/components/MnmlCircles.vue'
-import MnmlSettings from '@/components/MnmlSettings.vue'
 import MnmlStartupError from '@/components/modal/MnmlStartupError.vue'
+import MnmlSettings from '@/components/settings/MnmlSettings.vue'
 import {MIDI_STATE, useMnml} from '@/mnml'
 
 const mnml = useMnml()

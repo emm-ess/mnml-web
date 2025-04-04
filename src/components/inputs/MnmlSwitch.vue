@@ -2,9 +2,9 @@
     <label class="p-switch">
         <input
             :id="id"
+            v-model="checked"
             type="checkbox"
             class="p-switch__input"
-            :checked="checked"
             role="switch"
         >
         <span class="p-switch__slider" />

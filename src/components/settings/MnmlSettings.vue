@@ -31,6 +31,8 @@
                 </mnml-select>
             </fieldset>
 
+            <mnml-settings-tempo />
+
             <fieldset>
                 <legend>Tracks</legend>
                 <table>
@@ -128,16 +130,18 @@
 import {computed, ref} from 'vue'
 
 import MnmlIconButton from '@/components/buttons/MnmlIconButton.vue'
-import MnmlDatalist from '@/components/forms/MnmlDatalist.vue'
-import MnmlMidiDeviceSelect from '@/components/forms/MnmlMidiDeviceSelect.vue'
-import MnmlNumberInput from '@/components/forms/MnmlNumberInput.vue'
-import MnmlRange from '@/components/forms/MnmlRange.vue'
-import MnmlSelect from '@/components/forms/MnmlSelect.vue'
-import MnmlSwitch from '@/components/forms/MnmlSwitch.vue'
-import MnmlTableFormBody, {type FormRow} from '@/components/forms/MnmlTableFormBody.vue'
-import {GM_PROGRAMS} from '@/helper/general-midi'
-import {objectPropModelArray} from '@/helper/vue'
+import MnmlDatalist from '@/components/inputs/MnmlDatalist.vue'
+import MnmlMidiDeviceSelect from '@/components/inputs/MnmlMidiDeviceSelect.vue'
+import MnmlNumberInput from '@/components/inputs/MnmlNumberInput.vue'
+import MnmlRange from '@/components/inputs/MnmlRange.vue'
+import MnmlSelect from '@/components/inputs/MnmlSelect.vue'
+import MnmlSwitch from '@/components/inputs/MnmlSwitch.vue'
+import MnmlTableFormBody, {type FormRow} from '@/components/inputs/MnmlTableFormBody.vue'
+import {GM_PROGRAMS} from '@/helper/general-midi.ts'
+import {objectPropModelArray} from '@/helper/vue.ts'
 import {SCALES, useMnml} from '@/mnml'
+
+import MnmlSettingsTempo from './MnmlSettingsTempo.vue'
 
 const mnml = useMnml()
 const generalMidiDevice = ref(true)
@@ -242,6 +246,7 @@ const form = computed<FormRow[]>(() => {
     display: block
     width: 100%
     height: 100vh
+    overflow: auto
 
 .col-single
     width: math.percentage(math.div(7, 48))

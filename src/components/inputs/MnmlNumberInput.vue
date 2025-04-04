@@ -7,6 +7,7 @@
     >
         <slot />
     </label>
+
     <input
         :id="id"
         v-model.number="model"
@@ -14,6 +15,7 @@
         :name="id"
         :min="min"
         :max="max"
+        v-bind="$attrs"
     >
 </template>
 

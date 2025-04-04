@@ -49,7 +49,7 @@
 import {ref} from 'vue'
 import type {Output} from 'webmidi'
 
-import MnmlMidiDeviceSelect from '@/components/forms/MnmlMidiDeviceSelect.vue'
+import MnmlMidiDeviceSelect from '@/components/inputs/MnmlMidiDeviceSelect.vue'
 import MnmlModalBase from '@/components/modal/MnmlModalBase.vue'
 import {MIDI_STATE, useMnml} from '@/mnml'
 

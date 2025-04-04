@@ -36,7 +36,7 @@ export class Mnml {
     state = MNML_STATE.STOPPED
     scale: PentatonicScale = SCALES[0]
     private _activeVoices = 1
-    readonly tickers = [new MnmlTicker(120), new MnmlTicker(140), new MnmlTicker(160)] as const
+    readonly tickers = [new MnmlTicker(120), new MnmlTicker(144), new MnmlTicker(144 * 1.2)]
 
     public readonly tracks: MnmlTrack[] = DEFAULT_TRACK_LENGTH.map((length, index) => {
         return new MnmlTrack(length, OCTAVES[index], 1)
