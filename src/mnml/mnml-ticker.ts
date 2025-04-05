@@ -17,7 +17,7 @@ export class MnmlTicker {
     tickables: MnmlVoice[]
 
     get bpm(): number {
-        return this._bpm
+        return this._bpm || this._nextBpm
     }
 
     set bpm(bpm: number) {

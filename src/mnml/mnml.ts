@@ -5,11 +5,10 @@ import {WebMidi} from 'webmidi'
 import {generalizedCrt} from '@/helper/crt'
 
 import {
-    type Key,
-    KEYS,
     MNML_STATE,
     type Pattern,
     type PentatonicScale,
+    type PitchClass,
     type PitchIndex,
     type TemporalInformation,
 } from './mnml-const'
@@ -39,7 +38,7 @@ export class Mnml {
         }
     }
 
-    private _key: Key = KEYS[0]
+    private _key: PitchClass = 0
     private _output: Output | null | undefined
     private _midiState = MIDI_STATE.UNKNOWN
     state = MNML_STATE.STOPPED
@@ -91,11 +90,11 @@ export class Mnml {
         return this.tracks.flatMap((track) => track.voices)
     }
 
-    public get key(): Key {
+    public get key(): PitchClass {
         return this._key
     }
 
-    public set key(key: Key) {
+    public set key(key: PitchClass) {
         this._key = key
         for (const track of this.tracks) {
             track.update()

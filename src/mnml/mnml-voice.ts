@@ -4,7 +4,7 @@ import {GENERAL_MIDI_CC} from '@/helper/general-midi'
 import type {MnmlTrack} from '@/mnml/mnml-track'
 
 import type {Mnml} from './mnml'
-import type {Pattern} from './mnml-const'
+import {type Pattern, type PatternStep, TRIGGER_MODE} from './mnml-const'
 
 export class MnmlVoice {
     track: MnmlTrack
@@ -16,6 +16,8 @@ export class MnmlVoice {
     active = false
     shouldStop = false
     channel!: OutputChannel
+    private lastPlayedPitchIndex: PatternStep = false
+    private play!: (pitchIndex: PatternStep) => void
 
     get channelNumber(): number {
         return this.channel.number
@@ -45,11 +47,26 @@ export class MnmlVoice {
         this.channel.sendControlChange(GENERAL_MIDI_CC.ChannelPan, value)
     }
 
+    changeTriggerMode(triggerMode: TRIGGER_MODE) {
+        switch (triggerMode) {
+            case TRIGGER_MODE.SINGLE:
+                this.play = this.playSingle.bind(this)
+                break
+            case TRIGGER_MODE.TIE:
+                this.play = this.playTie.bind(this)
+                break
+            case TRIGGER_MODE.HOLD:
+                this.play = this.playHold.bind(this)
+                break
+        }
+    }
+
     constructor(track: MnmlTrack, channelNumber: number, mnml: Mnml) {
         this.track = track
         this.pattern = track.pattern
         this.mnml = mnml
         this.channelNumber = channelNumber
+        this.changeTriggerMode(track.triggerMode)
     }
 
     private sendChannelSettings(): void {
@@ -85,13 +102,40 @@ export class MnmlVoice {
             }
 
             const pitchIndex = this.pattern[this.index]
-            if (pitchIndex === false) {
-                this.channel.sendAllNotesOff()
+            this.play(pitchIndex)
+        }
+    }
+
+    private playSingle(pitchIndex: PatternStep): void {
+        this.channel.sendAllNotesOff()
+        if (pitchIndex !== false) {
+            this.sendPitch(pitchIndex)
+        }
+    }
+
+    private playHold(pitchIndex: PatternStep): void {
+        if (pitchIndex !== false) {
+            this.channel.sendAllNotesOff()
+            this.sendPitch(pitchIndex)
+        }
+    }
+
+    private playTie(pitchIndex: PatternStep): void {
+        if (pitchIndex === false || pitchIndex !== this.lastPlayedPitchIndex) {
+            this.channel.sendAllNotesOff()
+
+            if (pitchIndex !== false) {
+                this.sendPitch(pitchIndex)
             }
             else {
-                const pitch = this.track.basePitch + this.mnml.scale.pitches[pitchIndex]
-                this.channel.playNote(pitch)
+                this.lastPlayedPitchIndex = false
             }
         }
+    }
+
+    private sendPitch(pitchIndex: Exclude<PatternStep, false>): void {
+        const pitch = this.track.basePitch + this.mnml.scale.pitches[pitchIndex]
+        this.channel.playNote(pitch)
+        this.lastPlayedPitchIndex = pitchIndex
     }
 }

@@ -31,10 +31,11 @@
                 </mnml-select>
 
                 <mnml-select
-                    id="pentatonic"
+                    id="pitch"
                     v-model="mnml.key"
                     :items="KEYS"
                     item-title="name"
+                    item-value="pitch"
                 >
                     Key
                 </mnml-select>
@@ -148,7 +149,7 @@ import MnmlSwitch from '@/components/inputs/MnmlSwitch.vue'
 import MnmlTableFormBody, {type FormRow} from '@/components/inputs/MnmlTableFormBody.vue'
 import {GM_PROGRAMS} from '@/helper/general-midi.ts'
 import {objectPropModelArray} from '@/helper/vue.ts'
-import {KEYS, SCALES, useMnml} from '@/mnml'
+import {KEYS, SCALES, TRIGGER_MODES, useMnml} from '@/mnml'
 
 import MnmlSettingsTempo from './MnmlSettingsTempo.vue'
 
@@ -160,6 +161,7 @@ const stereoDataList = [{value: -63, label: 'links'}, {value: 0}, {value: 63, la
 
 const channelNumbers = objectPropModelArray(mnml.voices, 'channelNumber')
 const midiPrograms = objectPropModelArray(mnml.tracks, 'midiProgram')
+const triggerModes = objectPropModelArray(mnml.tracks, 'triggerMode')
 const octaves = objectPropModelArray(mnml.tracks, 'octave')
 const volumes = objectPropModelArray(mnml.voices, 'volume')
 const panning = objectPropModelArray(mnml.voices, 'pan')
@@ -197,6 +199,14 @@ const form = computed<FormRow[]>(() => {
             models: channelNumbers.value,
         },
         programInput,
+        {
+            title: 'Triggermode',
+            id: 'trigger-mode',
+            spans: [1, 3, 3, 3, 3],
+            component: MnmlSelect,
+            componentProps: {items: TRIGGER_MODES, itemTitle: 'name', itemValue: 'value'},
+            models: triggerModes.value,
+        },
         {
             title: 'Oktave',
             id: 'octave',

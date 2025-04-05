@@ -18,9 +18,11 @@ export const VOICES_MAX = 3
 
 export const DEFAULT_TRACK_LENGTH = [8, 16, 17, 18, 19] as const
 
+export type PitchClass = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
 export type PitchIndex = 0 | 1 | 2 | 3 | 4
 
-export type Pattern = Array<PitchIndex | false>
+export type PatternStep = PitchIndex | false
+export type Pattern = PatternStep[]
 
 export type TemporalInformation = {
     time: number
@@ -29,7 +31,7 @@ export type TemporalInformation = {
 
 export type PentatonicScale = Readonly<{
     name: string
-    pitches: [number, number, number, number, number]
+    pitches: [PitchClass, PitchClass, PitchClass, PitchClass, PitchClass]
 }>
 
 // C, C#/Db, D, D#/Eb, E, F, F#/Gb, G, G#/Ab, A, A#/Bb, B
@@ -44,7 +46,7 @@ export const SCALES: PentatonicScale[] = [
 
 export type Key = Readonly<{
     name: string
-    pitch: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+    pitch: PitchClass
 }>
 
 export const KEYS: Key[] = [
@@ -60,6 +62,24 @@ export const KEYS: Key[] = [
     {name: 'A', pitch: 9},
     {name: 'A#/Bb', pitch: 10},
     {name: 'B', pitch: 11},
+]
+
+export const enum TRIGGER_MODE {
+    /** Trigger a note when the step is active. */
+    SINGLE,
+    /** Ties a note across multiple steps to make a longer sustained note. */
+    TIE,
+    /** Some sequencers allow "hold mode", where a note continues until another note is triggered or a gate-off is sent. */
+    HOLD,
+}
+
+export const TRIGGER_MODES = [
+    {name: 'SINGLE', value: TRIGGER_MODE.SINGLE},
+    {name: 'TIE', value: TRIGGER_MODE.TIE},
+    {name: 'HOLD', value: TRIGGER_MODE.HOLD},
+    // use?
+    // Legato: When steps are connected smoothly without re-triggering the note envelope.
+    // Retrigger: Triggers a note multiple times within one step (used for rolls, flams, etc.).
 ]
 
 function hexToRgb(hex: `#${string}`): string {

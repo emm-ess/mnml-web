@@ -56,7 +56,16 @@
     </select>
 </template>
 
-<script lang="ts" setup generic="ValueType, Grouped extends boolean = false">
+<script
+    lang="ts"
+    setup
+    generic="
+        ItemType,
+        ItemKey extends keyof ItemType | undefined,
+        ValueType extends ItemKey extends keyof ItemType ? ItemType[ItemKey] : ItemType,
+        Grouped extends boolean = false
+    "
+>
 // TODO: have a look again for generic types, was:
 // <
 //     ValueType extends Record<any, unknown> & {[key in ItemTitle]: string},
@@ -68,14 +77,14 @@ const model = defineModel<ValueType | null>()
 withDefaults(
     defineProps<{
         id: string
-        items: Grouped extends true ? {label: string; items: ValueType[]}[] : ValueType[]
-        itemTitle?: keyof ValueType
-        itemValue?: keyof ValueType
+        items: Grouped extends true ? {label: string; items: ItemType[]}[] : ItemType[]
+        itemTitle?: keyof ItemType
+        itemValue?: ItemKey
         grouped?: Grouped
         labelInvisible?: boolean
     }>(),
     {
-        itemTitle: 'title' as keyof ValueType,
+        itemTitle: 'title' as keyof ItemType,
         itemValue: undefined,
     },
 )
