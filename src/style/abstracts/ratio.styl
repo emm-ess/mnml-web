@@ -1,0 +1,19 @@
+ratio($ratio, $minusPadding = none)
+    $padding = $ratio
+
+    if $minusPadding != none
+        padding = calc($ratio - $minusPadding)
+
+    &::before
+        content ''
+        float left
+        width 1px
+        height 0
+        margin-left -1px
+        padding-top $padding
+
+    &::after
+        display table
+        content ''
+        clear both
+

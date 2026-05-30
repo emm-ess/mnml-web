@@ -66,36 +66,28 @@ const percentage = computed(() => {
 })
 </script>
 
-<style lang="sass">
-@use 'vanilla-framework' as *
-@include vf-base
-@include vf-b-forms
-
-@include vf-u-off-screen
-</style>
-
-<style lang="sass" scoped>
+<style lang="stylus" scoped>
 .range-input
     &.vertical
         // values taken from vanilla-framework
-        width: 0.1875rem
-        margin: 0 0.40625rem
-        writing-mode: vertical-rl
-        transform: rotateZ(180deg)
-        vertical-align: initial
+        width 0.1875rem
+        margin 0 0.40625rem
+        writing-mode vertical-rl
+        transform rotateZ(180deg)
+        vertical-align initial
 
         &::-webkit-slider-thumb
-            margin: 0
+            margin 0
 
     &.thumb-only
-        background: var(--vf-color-border-default)
+        background var(--vf-color-border-default)
 
     &:not(.thumb-only)
-        background-image: linear-gradient(180deg, var(--vf-color-link-default) v-bind('percentage'), var(--vf-color-border-default) v-bind('percentage'))
+        background-image linear-gradient(180deg, var(--vf-color-link-default) v-bind('percentage'), var(--vf-color-border-default) v-bind('percentage'))
 
     &.has-datalist::-webkit-slider-container
-        min-block-size: 0
+        min-block-size 0
 
 .number-input
-    margin-top: 0.40625rem
+    margin-top 0.40625rem
 </style>

@@ -1,7 +1,7 @@
 import {ref, watch} from 'vue'
 
-export function objectPropModelArray<Obj extends Object, Field extends keyof Obj>(objArray: Obj[], field: Field) {
-    const modelArray = ref<Array<Obj[Field]>>(objArray.map((item) => item[field]))
+export function objectPropModelArray<Obj extends object, Field extends keyof Obj>(objArray: Obj[], field: Field) {
+    const modelArray = ref<Obj[Field][]>(objArray.map((item) => item[field]))
     watch(
         modelArray,
         (newValueArray) => {

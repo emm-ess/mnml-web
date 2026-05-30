@@ -68,18 +68,18 @@ export class MnmlTicker {
 
     stop(): void {
         if (this.intervalId) {
-            window.clearInterval(this.intervalId)
+            globalThis.clearInterval(this.intervalId)
             this.intervalId = 0
         }
     }
 
     restart(): void {
         if (this.intervalId) {
-            window.clearInterval(this.intervalId)
+            globalThis.clearInterval(this.intervalId)
         }
         this._bpm = this._nextBpm
         const ms = 60_000 / this._bpm
-        this.intervalId = window.setInterval(this.tick.bind(this), ms)
+        this.intervalId = (globalThis as unknown as Window).setInterval(this.tick.bind(this), ms)
         this._nextBpm = 0
     }
 
@@ -110,29 +110,35 @@ export class MnmlTicker {
 
     private setLength(patternLengths: number[]): void {
         switch (patternLengths.length) {
-            case 0:
+            case 0: {
                 this._length = 0
                 break
-            case 1:
+            }
+            case 1: {
                 this._length = patternLengths[0]
                 break
-            default:
-                this._length = lcm(patternLengths) as number
+            }
+            default: {
+                this._length = lcm(patternLengths)!
                 break
+            }
         }
     }
 
     private setPosition(positions: number[], patternLengths: number[]): void {
         switch (positions.length) {
-            case 0:
+            case 0: {
                 this._position = 0
                 break
-            case 1:
+            }
+            case 1: {
                 this._position = positions[0]
                 break
-            default:
-                this._position = generalizedCrt(positions, patternLengths) as number
+            }
+            default: {
+                this._position = generalizedCrt(positions, patternLengths)!
                 break
+            }
         }
     }
 }

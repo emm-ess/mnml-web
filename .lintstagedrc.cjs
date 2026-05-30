@@ -6,7 +6,7 @@ module.exports = {
     // check-types
     '(package-lock.json|*.ts?(x))': () => 'npm run type-check',
     // lint styles
-    '*.(vue|htm|html|sass)': 'stylelint --cache',
+    '*.(vue|htm|html|scss|styl)': 'stylelint --cache --fix --quiet-deprecation-warnings',
     // optimize images
     '*.{png,jpeg,jpg,gif,svg}': 'imagemin-lint-staged',
     // lint everything, if dependencies got updated

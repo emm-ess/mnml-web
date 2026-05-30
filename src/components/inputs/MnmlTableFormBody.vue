@@ -60,8 +60,8 @@ defineProps<{
 }>()
 </script>
 
-<style lang="sass" scoped>
-:deep(input),
+<style lang="stylus" scoped>
+:deep(input)
 :deep(select)
-    margin: 0
+    margin 0
 </style>

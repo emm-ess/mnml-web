@@ -1,4 +1,5 @@
-import './style/main.sass'
+import './style/vanilla.scss'
+import './style/main.styl'
 
 import {createApp} from 'vue'
 

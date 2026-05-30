@@ -35,21 +35,15 @@ const model = defineModel<number>({
 })
 </script>
 
-<style lang="sass">
-@use 'vanilla-framework' as *
-@include vf-base
-@include vf-b-forms
-</style>
-
-<style lang="sass" scoped>
+<style lang="stylus" scoped>
 .input-line
-    display: flex
+    display flex
 
-button,
+button
 input
-    margin: 0
+    margin 0
 
 input
-    flex: 1 1 auto
-    min-width: unset
+    flex 1 1 auto
+    min-width unset
 </style>

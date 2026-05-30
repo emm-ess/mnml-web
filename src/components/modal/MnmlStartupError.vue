@@ -61,9 +61,3 @@ function setMidiInput() {
     mnml.output = selectedOutput.value as Output
 }
 </script>
-
-<style lang="sass">
-@use 'vanilla-framework' as *
-@include vf-base
-@include vf-p-buttons
-</style>

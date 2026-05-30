@@ -21,9 +21,3 @@ defineProps<{
     id: string
 }>()
 </script>
-
-<style lang="sass">
-@use 'vanilla-framework' as *
-@include vf-base
-@include vf-p-switch
-</style>

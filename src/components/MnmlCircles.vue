@@ -105,75 +105,74 @@ function handleClick(event: MouseEvent): void {
 }
 
 function togglePlayPause(): void {
-    if (mnml.state !== MNML_STATE.PLAYING) {
-        mnml.start()
+    if (mnml.state === MNML_STATE.PLAYING) {
+        mnml.pause()
     }
     else {
-        mnml.pause()
+        mnml.start()
     }
 }
 </script>
 
-<style lang="sass" scoped>
-%corner-grid
-    position: absolute
-    display: grid
-    grid: repeat(3, 1fr) / repeat(3, 1fr)
-    gap: 8%
-    width: 22%
-    height: 22%
+<style lang="stylus" scoped>
+corner-grid()
+    position absolute
+    display grid
+    grid repeat(3, 1fr) \/ repeat(3, 1fr)
+    gap 8%
+    width 22%
+    height 22%
 
     button
-        width: 100%
-        height: 100%
+        width 100%
+        height 100%
 
 .main-interface
-    position: relative
-    width: 100vmin
-    height: 100vmin
-    aspect-ratio: 1
+    position relative
+    width 100vmin
+    height 100vmin
+    aspect-ratio 1
 
 .pitch-select
-    @extend %corner-grid
-    // stylelint..
+    corner-grid()
 
     button:nth-child(6)
-        grid-column: 1
+        grid-column 1
 
 .controls
-    bottom: 0
-    left: 0
-    grid: repeat(3, 1fr) / repeat(3, 1fr)
-    @extend %corner-grid
+    corner-grid()
+
+    bottom 0
+    left 0
 
     button
-        &:nth-child(1),
+        &:nth-child(1)
         &:nth-child(2)
-            grid-row: 2
+            grid-row 2
 
-        &:nth-child(3),
+        &:nth-child(3)
         &:nth-child(4)
-            grid-row: 3
+            grid-row 3
 
 .quick-settings
-    position: absolute
-    right: 0
-    bottom: 0
-    width: 22%
+    position absolute
+    right 0
+    bottom 0
+    width 22%
 
 .inner-circle-settings
-    position: absolute
-    top: 40%
-    left: 40%
-    display: flex
-    place-items: center
-    place-content: center
-    width: 20%
-    height: 20%
-    overflow: hidden
-    border-radius: 50%
+    position absolute
+    top 40%
+    left 40%
+    display flex
+    place-items center
+    place-content center
+    width 20%
+    height 20%
+    overflow hidden
+    border-radius 50%
 
 .play-pause
-    width: 50%
-    height: 50%
+    width 50%
+    height 50%
 </style>

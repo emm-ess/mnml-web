@@ -20,7 +20,6 @@ export default [
                 ...globals.browser,
             },
             parserOptions: {
-                project: './tsconfig.app.json',
                 projectService: true,
             },
         },
@@ -34,7 +33,6 @@ export default [
                 ...globals.node,
             },
             parserOptions: {
-                project: './tsconfig.node.json',
                 projectService: true,
             },
         },

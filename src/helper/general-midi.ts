@@ -207,10 +207,10 @@ export const GM_PROGRAMS = [
             {program: 128, name: 'Gunshot'},
         ],
     },
-] as const satisfies Array<{
+] as const satisfies {
     label: string
-    items: Array<{program: number; name: string}>
-}>
+    items: {program: number; name: string}[]
+}[]
 
 export enum GENERAL_MIDI_CC {
     ModulationWheel = 1,

@@ -9,7 +9,7 @@ import {type Pattern, type PatternStep, TRIGGER_MODE} from './mnml-const'
 export class MnmlVoice {
     track: MnmlTrack
     pattern: Pattern
-    index: number = 0
+    index = 0
     _volume = 127
     _pan = 63
     mnml: Mnml
@@ -49,15 +49,18 @@ export class MnmlVoice {
 
     changeTriggerMode(triggerMode: TRIGGER_MODE) {
         switch (triggerMode) {
-            case TRIGGER_MODE.SINGLE:
+            case TRIGGER_MODE.SINGLE: {
                 this.play = this.playSingle.bind(this)
                 break
-            case TRIGGER_MODE.TIE:
+            }
+            case TRIGGER_MODE.TIE: {
                 this.play = this.playTie.bind(this)
                 break
-            case TRIGGER_MODE.HOLD:
+            }
+            case TRIGGER_MODE.HOLD: {
                 this.play = this.playHold.bind(this)
                 break
+            }
         }
     }
 
@@ -124,11 +127,11 @@ export class MnmlVoice {
         if (pitchIndex === false || pitchIndex !== this.lastPlayedPitchIndex) {
             this.channel.sendAllNotesOff()
 
-            if (pitchIndex !== false) {
-                this.sendPitch(pitchIndex)
+            if (pitchIndex === false) {
+                this.lastPlayedPitchIndex = false
             }
             else {
-                this.lastPlayedPitchIndex = false
+                this.sendPitch(pitchIndex)
             }
         }
     }

@@ -89,11 +89,3 @@ withDefaults(
     },
 )
 </script>
-
-<style lang="sass">
-@use 'vanilla-framework' as *
-@include vf-base
-@include vf-b-forms
-
-@include vf-u-off-screen
-</style>

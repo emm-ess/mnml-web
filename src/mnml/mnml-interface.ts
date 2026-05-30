@@ -196,7 +196,7 @@ export class MnmlInterface {
 
     public startDrawing(): void {
         this.running = true
-        window.requestAnimationFrame(this.draw.bind(this))
+        globalThis.requestAnimationFrame(this.draw.bind(this))
     }
 
     public stopDrawing(): void {
@@ -215,7 +215,7 @@ export class MnmlInterface {
         this.drawProgress()
         this.context.restore()
         if (this.running) {
-            window.requestAnimationFrame(this.draw.bind(this))
+            globalThis.requestAnimationFrame(this.draw.bind(this))
         }
     }
 
@@ -266,8 +266,9 @@ export class MnmlInterface {
     private drawProgress(): void {
         const activeTicker = this.mnml.activeTicker
         switch (activeTicker.length) {
-            case 0:
+            case 0: {
                 return
+            }
             case 1: {
                 const renderInfo = this.progressRenderInfos[0]
                 this.drawProgressBar(activeTicker[0].progress, renderInfo.radii[0], renderInfo.stroke)
@@ -275,9 +276,9 @@ export class MnmlInterface {
             }
             default: {
                 const renderInfo = this.progressRenderInfos[activeTicker.length - 1]
-                activeTicker.forEach((ticker, index) => {
+                for (const [index, ticker] of activeTicker.entries()) {
                     this.drawProgressBar(ticker.progress, renderInfo.radii[index], renderInfo.stroke)
-                })
+                }
                 // this would be the total progress, but since it's calculation is not working, there is no need to display it
                 // this.drawProgressBar(this.mnml.progress, this.progressRenderInfos[0].radii[0], this.progressRenderInfos[0].stroke)
             }
@@ -299,7 +300,7 @@ export class MnmlInterface {
         const rect = this.canvas.getBoundingClientRect()
         x = x - rect.width / 2
         y = y - rect.height / 2
-        const radius = Math.sqrt(x * x + y * y) * window.devicePixelRatio
+        const radius = Math.hypot(x, y) * window.devicePixelRatio
 
         if (this.trackRenderInfos[0].innerRadius > radius || radius > this.maxRadius) {
             return

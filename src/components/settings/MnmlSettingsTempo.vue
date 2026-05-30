@@ -138,31 +138,3 @@ const relativeBpm2 = computed({
     },
 })
 </script>
-
-<style lang="sass" scoped>
-@use 'sass:math'
-
-.button-open,
-.button-close
-    position: absolute
-    top: 0
-    right: 0
-
-.settings-layer
-    position: fixed
-    top: 0
-    right: 0
-    left: unset
-    display: block
-    width: 100%
-    height: 100vh
-
-.col-single
-    width: math.percentage(math.div(7, 48))
-
-.col-divided
-    width: math.percentage(math.div(8.5, 48))
-
-:deep(.volume input.vertical)
-    height: 60px
-</style>

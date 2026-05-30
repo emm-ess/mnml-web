@@ -42,9 +42,3 @@ withDefaults(
     },
 )
 </script>
-
-<style lang="sass">
-@use 'vanilla-framework' as *
-@include vf-base
-@include vf-p-modal
-</style>

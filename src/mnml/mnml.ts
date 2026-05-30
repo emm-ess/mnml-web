@@ -105,13 +105,15 @@ export class Mnml {
     public get temporalInformation(): TemporalInformation {
         const activeTicker = this.activeTicker
         switch (activeTicker.length) {
-            case 0:
+            case 0: {
                 return {
                     time: 0,
                     duration: 0,
                 }
-            case 1:
+            }
+            case 1: {
                 return activeTicker[0]
+            }
             default: {
                 const {times, durations} = activeTicker.reduce<{
                     times: number[]
@@ -127,10 +129,10 @@ export class Mnml {
                         durations: [],
                     },
                 )
-                const time = generalizedCrt(times, durations) as number
+                const time = generalizedCrt(times, durations)!
                 return {
                     time,
-                    duration: lcm(durations) as number,
+                    duration: lcm(durations)!,
                 }
             }
         }
